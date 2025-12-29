@@ -1,0 +1,5 @@
+[
+  {"model":"maestros.programa","fields":{"codigo":"PGEN","nombre":"Programa General","activo":true}},
+  {"model":"maestros.programa","fields":{"codigo":"PADM","nombre":"Administración y Apoyo","activo":true}},
+  {"model":"maestros.programa","fields":{"codigo":"PTEC","nombre":"Relaciones Técnicas y Estudios","activo":true}}
+]

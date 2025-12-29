@@ -1,0 +1,22 @@
+[
+    {
+        "model": "maestros.diario",
+        "pk": 1,
+        "fields": {
+            "codigo": "COM",
+            "nombre": "Compras",
+            "cuenta_contraparte": null,
+            "activo": true
+        }
+    },
+    {
+        "model": "maestros.diario",
+        "pk": 2,
+        "fields": {
+            "codigo": "BAN",
+            "nombre": "Bancos",
+            "cuenta_contraparte": null,
+            "activo": true
+        }
+    }
+]

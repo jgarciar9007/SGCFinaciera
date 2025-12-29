@@ -1,0 +1,34 @@
+[
+  {
+    "model": "maestros.banco",
+    "fields": {
+      "nombre": "BANGE",
+      "swift": "BANGEGQX",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.banco",
+    "fields": {
+      "nombre": "BGFIBank",
+      "swift": "BGFIGQX",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.banco",
+    "fields": {
+      "nombre": "CCEI Bank",
+      "swift": "CCEIGQX",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.banco",
+    "fields": {
+      "nombre": "Société Générale",
+      "swift": "SGGQGQX",
+      "activo": true
+    }
+  }
+]

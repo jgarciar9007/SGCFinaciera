@@ -1,0 +1,76 @@
+--- Request Start ---
+[Dashboard] 1. Fetching Bank Accounts...
+Error in getDashboardStats: 
+Invalid `prisma.bankAccount.findMany()` invocation in
+D:\Proyectos de Programacion\SGCFinaciera\server\src\controllers\dashboardController.ts:15:55
+
+  12 
+  13 // 1. Bank Summary & Total Cash
+  14 log('[Dashboard] 1. Fetching Bank Accounts...');
+→ 15 const bankAccounts = await prisma.bankAccount.findMany(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   | 
+ 6 |   provider = "sqlite"
+ 7 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+Stack: PrismaClientInitializationError: 
+Invalid `prisma.bankAccount.findMany()` invocation in
+D:\Proyectos de Programacion\SGCFinaciera\server\src\controllers\dashboardController.ts:15:55
+
+  12 
+  13 // 1. Bank Summary & Total Cash
+  14 log('[Dashboard] 1. Fetching Bank Accounts...');
+→ 15 const bankAccounts = await prisma.bankAccount.findMany(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   | 
+ 6 |   provider = "sqlite"
+ 7 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+--- Request Start ---
+[Dashboard] 1. Fetching Bank Accounts...
+Error in getDashboardStats: 
+Invalid `prisma.bankAccount.findMany()` invocation in
+D:\Proyectos de Programacion\SGCFinaciera\server\src\controllers\dashboardController.ts:15:55
+
+  12 
+  13 // 1. Bank Summary & Total Cash
+  14 log('[Dashboard] 1. Fetching Bank Accounts...');
+→ 15 const bankAccounts = await prisma.bankAccount.findMany(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   | 
+ 6 |   provider = "sqlite"
+ 7 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+Stack: PrismaClientInitializationError: 
+Invalid `prisma.bankAccount.findMany()` invocation in
+D:\Proyectos de Programacion\SGCFinaciera\server\src\controllers\dashboardController.ts:15:55
+
+  12 
+  13 // 1. Bank Summary & Total Cash
+  14 log('[Dashboard] 1. Fetching Bank Accounts...');
+→ 15 const bankAccounts = await prisma.bankAccount.findMany(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   | 
+ 6 |   provider = "sqlite"
+ 7 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (D:\Proyectos de Programacion\SGCFinaciera\server\node_modules\@prisma\client\runtime\library.js:130:9633)

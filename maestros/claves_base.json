@@ -1,0 +1,408 @@
+[
+  {
+    "model": "maestros.unidadorganica",
+    "pk": 1,
+    "fields": {
+      "codigo": "UO01",
+      "nombre": "CNDES",
+      "responsable": null,
+      "activa": true
+    }
+  },
+  {
+    "model": "maestros.programa",
+    "pk": 1,
+    "fields": {
+      "codigo": "PRG01",
+      "nombre": "Operación institucional",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.programa",
+    "pk": 2,
+    "fields": {
+      "codigo": "PRG02",
+      "nombre": "Inversión y equipamiento",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.programa",
+    "pk": 3,
+    "fields": {
+      "codigo": "PRG03",
+      "nombre": "Formación y desarrollo",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.fuente",
+    "pk": 1,
+    "fields": {
+      "codigo": "FTE01",
+      "nombre": "Tesoro",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 1,
+    "fields": {
+      "codigo": "66113",
+      "nombre": "Asignaciones Globales",
+      "cuenta_contable": 184,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 2,
+    "fields": {
+      "codigo": "66114",
+      "nombre": "Sueldos Personal Civil",
+      "cuenta_contable": 184,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 3,
+    "fields": {
+      "codigo": "66116",
+      "nombre": "Pagas Extraordinarias",
+      "cuenta_contable": 185,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 4,
+    "fields": {
+      "codigo": "66312",
+      "nombre": "Gastos de Representación",
+      "cuenta_contable": 186,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 5,
+    "fields": {
+      "codigo": "66314",
+      "nombre": "Complemento por Mayor Responsabilidad",
+      "cuenta_contable": 187,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 6,
+    "fields": {
+      "codigo": "66316",
+      "nombre": "Complemento Específico",
+      "cuenta_contable": 189,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 7,
+    "fields": {
+      "codigo": "66317",
+      "nombre": "Complemento por Mayor Rendimiento",
+      "cuenta_contable": 190,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 8,
+    "fields": {
+      "codigo": "66321",
+      "nombre": "Complemento de Escala",
+      "cuenta_contable": 191,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 9,
+    "fields": {
+      "codigo": "66322",
+      "nombre": "Prima de Peligrosidad",
+      "cuenta_contable": 192,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 10,
+    "fields": {
+      "codigo": "66323",
+      "nombre": "Prima de Dedicación",
+      "cuenta_contable": 193,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 11,
+    "fields": {
+      "codigo": "66332",
+      "nombre": "Prima de Vivienda",
+      "cuenta_contable": 152,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 12,
+    "fields": {
+      "codigo": "66334",
+      "nombre": "Prima de Luz",
+      "cuenta_contable": 153,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 13,
+    "fields": {
+      "codigo": "66335",
+      "nombre": "Prima de Teléfono",
+      "cuenta_contable": 154,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 14,
+    "fields": {
+      "codigo": "66326",
+      "nombre": "Prima de Combustible",
+      "cuenta_contable": 196,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 15,
+    "fields": {
+      "codigo": "66333",
+      "nombre": "Gratificación Especial",
+      "cuenta_contable": 197,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 16,
+    "fields": {
+      "codigo": "60113",
+      "nombre": "Material y Útiles de Oficina",
+      "cuenta_contable": 157,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 17,
+    "fields": {
+      "codigo": "60111",
+      "nombre": "Otros suministros y equipamiento de oficina",
+      "cuenta_contable": 199,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 18,
+    "fields": {
+      "codigo": "60121",
+      "nombre": "Compra de Mobiliario",
+      "cuenta_contable": 201,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 19,
+    "fields": {
+      "codigo": "60122",
+      "nombre": "Compra de Equipos y Aparatos Diversos",
+      "cuenta_contable": 202,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 20,
+    "fields": {
+      "codigo": "60911",
+      "nombre": "Combustible y Lubrificantes",
+      "cuenta_contable": 205,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 21,
+    "fields": {
+      "codigo": "61113",
+      "nombre": "Estudios y Trabajos técnicos",
+      "cuenta_contable": 162,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 22,
+    "fields": {
+      "codigo": "61121",
+      "nombre": "Seminarios y Formación",
+      "cuenta_contable": 163,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 23,
+    "fields": {
+      "codigo": "61112",
+      "nombre": "Dietas misiones oficiales en el Interior",
+      "cuenta_contable": 212,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 24,
+    "fields": {
+      "codigo": "61122",
+      "nombre": "Dietas misiones oficiales en el Exterior",
+      "cuenta_contable": 213,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 25,
+    "fields": {
+      "codigo": "61311",
+      "nombre": "Pasajes en el Interior",
+      "cuenta_contable": 214,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 26,
+    "fields": {
+      "codigo": "61411",
+      "nombre": "Pasajes en el Exterior",
+      "cuenta_contable": 215,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 27,
+    "fields": {
+      "codigo": "61212",
+      "nombre": "Alquiler de inmuebles Servicios públicos",
+      "cuenta_contable": 216,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 28,
+    "fields": {
+      "codigo": "61621",
+      "nombre": "Internet",
+      "cuenta_contable": 169,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 29,
+    "fields": {
+      "codigo": "61431",
+      "nombre": "Teléfono y Fax",
+      "cuenta_contable": 220,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 30,
+    "fields": {
+      "codigo": "61413",
+      "nombre": "Mantenimiento y Reparación de Vehículos",
+      "cuenta_contable": 171,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 31,
+    "fields": {
+      "codigo": "61711",
+      "nombre": "Reuniones y conferencias",
+      "cuenta_contable": 221,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 32,
+    "fields": {
+      "codigo": "61722",
+      "nombre": "Gastos de Logística y Recepciones",
+      "cuenta_contable": 223,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 33,
+    "fields": {
+      "codigo": "61732",
+      "nombre": "Desarrollo y Gestión de Página Web",
+      "cuenta_contable": 174,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 34,
+    "fields": {
+      "codigo": "61371",
+      "nombre": "Fiestas oficiales y ceremonias",
+      "cuenta_contable": 175,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 35,
+    "fields": {
+      "codigo": "61914",
+      "nombre": "Encuadernación y Otros Tipos de Diseño",
+      "cuenta_contable": 225,
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.partida",
+    "pk": 36,
+    "fields": {
+      "codigo": "65911",
+      "nombre": "Otros gastos excepcionales (Peajes y Otros)",
+      "cuenta_contable": 228,
+      "activo": true
+    }
+  }
+]

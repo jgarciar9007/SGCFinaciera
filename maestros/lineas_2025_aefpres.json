@@ -1,0 +1,422 @@
+[
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 1,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Asignaciones Globales",
+    "programa": 2,
+    "partida": 1,
+    "fuente": 1,
+    "credito_inicial": "217271000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 2,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Sueldos Personal Civil",
+    "programa": 2,
+    "partida": 2,
+    "fuente": 1,
+    "credito_inicial": "330900000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 3,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Pagas Extraordinarias",
+    "programa": 2,
+    "partida": 3,
+    "fuente": 1,
+    "credito_inicial": "90604000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 4,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Gastos de Representación",
+    "programa": 2,
+    "partida": 4,
+    "fuente": 1,
+    "credito_inicial": "44000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 5,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Complemento por Mayor Responsabilidad",
+    "programa": 2,
+    "partida": 5,
+    "fuente": 1,
+    "credito_inicial": "130160000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 6,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Complemento Específico",
+    "programa": 2,
+    "partida": 7,
+    "fuente": 1,
+    "credito_inicial": "50100000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 7,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Complemento de Escala",
+    "programa": 2,
+    "partida": 8,
+    "fuente": 1,
+    "credito_inicial": "200740000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 8,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Primas de Domesticidad",
+    "programa": 2,
+    "partida": 9,
+    "fuente": 1,
+    "credito_inicial": "60000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 9,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Prima de Vivienda",
+    "programa": 2,
+    "partida": 10,
+    "fuente": 1,
+    "credito_inicial": "40000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 10,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Prima de Vehículo",
+    "programa": 2,
+    "partida": 11,
+    "fuente": 1,
+    "credito_inicial": "11000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 11,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Prima de Luz",
+    "programa": 2,
+    "partida": 12,
+    "fuente": 1,
+    "credito_inicial": "48000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 12,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Prima de Teléfono",
+    "programa": 2,
+    "partida": 13,
+    "fuente": 1,
+    "credito_inicial": "24000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 13,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Prima de Combustible",
+    "programa": 2,
+    "partida": 14,
+    "fuente": 1,
+    "credito_inicial": "58000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 14,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Gratificación Especial",
+    "programa": 2,
+    "partida": 15,
+    "fuente": 1,
+    "credito_inicial": "42100000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 15,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Materiales y Útiles de Oficina",
+    "programa": 2,
+    "partida": 17,
+    "fuente": 1,
+    "credito_inicial": "32000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 16,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Otros suministros y equipamiento de oficina",
+    "programa": 2,
+    "partida": 21,
+    "fuente": 1,
+    "credito_inicial": "30000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 17,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Compra de Mobiliario",
+    "programa": 2,
+    "partida": 18,
+    "fuente": 1,
+    "credito_inicial": "30000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 18,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Compra de Equipos y Aparatos Diversos",
+    "programa": 2,
+    "partida": 19,
+    "fuente": 1,
+    "credito_inicial": "24000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 19,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Combustible y Lubrificantes",
+    "programa": 2,
+    "partida": 28,
+    "fuente": 1,
+    "credito_inicial": "24000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 20,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Estudios y Trabajos técnicos",
+    "programa": 2,
+    "partida": 26,
+    "fuente": 1,
+    "credito_inicial": "15000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 21,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Seminarios y Formación",
+    "programa": 2,
+    "partida": 29,
+    "fuente": 1,
+    "credito_inicial": "20000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 22,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Dietas misiones oficiales en el Interior",
+    "programa": 2,
+    "partida": 30,
+    "fuente": 1,
+    "credito_inicial": "20000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 23,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Dietas misiones oficiales en el Exterior",
+    "programa": 2,
+    "partida": 31,
+    "fuente": 1,
+    "credito_inicial": "70000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 24,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Pasajes en el Interior",
+    "programa": 2,
+    "partida": 35,
+    "fuente": 1,
+    "credito_inicial": "25000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 25,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Pasajes en el Exterior",
+    "programa": 2,
+    "partida": 36,
+    "fuente": 1,
+    "credito_inicial": "80000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 26,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Alquiler de inmuebles Servicios públicos",
+    "programa": 2,
+    "partida": 32,
+    "fuente": 1,
+    "credito_inicial": "120000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 27,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Internet",
+    "programa": 2,
+    "partida": 33,
+    "fuente": 1,
+    "credito_inicial": "12000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 28,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Teléfono y Fax",
+    "programa": 2,
+    "partida": 34,
+    "fuente": 1,
+    "credito_inicial": "24000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 29,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Mantenimiento y Reparación de Vehículos",
+    "programa": 2,
+    "partida": 38,
+    "fuente": 1,
+    "credito_inicial": "20000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 30,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Reuniones y conferencias",
+    "programa": 2,
+    "partida": 39,
+    "fuente": 1,
+    "credito_inicial": "15000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 31,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Gastos de Logística y Recepciones",
+    "programa": 2,
+    "partida": 40,
+    "fuente": 1,
+    "credito_inicial": "15000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 32,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Desarrollo y Gestión de Página Web",
+    "programa": 2,
+    "partida": 41,
+    "fuente": 1,
+    "credito_inicial": "15000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 33,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Fiestas oficiales y ceremonias",
+    "programa": 2,
+    "partida": 42,
+    "fuente": 1,
+    "credito_inicial": "10000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 34,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Encuadernación y Otros Tipos de Diseño",
+    "programa": 2,
+    "partida": 43,
+    "fuente": 1,
+    "credito_inicial": "35000000.00"
+  }
+},
+{
+  "model": "presupuesto.presupuestolinea",
+  "pk": 35,
+  "fields": {
+    "presupuesto": 1,
+    "descripcion": "Otros gastos excepcionales (Peajes y Otros)",
+    "programa": 2,
+    "partida": 46,
+    "fuente": 1,
+    "credito_inicial": "20000000.00"
+  }
+}
+]

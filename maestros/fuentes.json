@@ -1,0 +1,5 @@
+[
+  {"model":"maestros.fuente","fields":{"codigo":"TGN","nombre":"Tesoro General de la Nación","activo":true}},
+  {"model":"maestros.fuente","fields":{"codigo":"DON","nombre":"Donaciones","activo":true}},
+  {"model":"maestros.fuente","fields":{"codigo":"EXT","nombre":"Recursos Externos","activo":true}}
+]

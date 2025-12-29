@@ -1,0 +1,6 @@
+[
+  {"model":"maestros.activofijofamilia","fields":{"codigo":"AF-EDIF","nombre":"Edificios","cuenta_activo":"121","cuenta_gasto":"681","activa":true}},
+  {"model":"maestros.activofijofamilia","fields":{"codigo":"AF-IT","nombre":"Equipos informáticos","cuenta_activo":"122","cuenta_gasto":"681","activa":true}},
+  {"model":"maestros.activofijofamilia","fields":{"codigo":"AF-MOB","nombre":"Mobiliario","cuenta_activo":"123","cuenta_gasto":"681","activa":true}},
+  {"model":"maestros.activofijofamilia","fields":{"codigo":"AF-VEH","nombre":"Vehículos","cuenta_activo":"124","cuenta_gasto":"681","activa":true}}
+]

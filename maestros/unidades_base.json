@@ -1,0 +1,41 @@
+[
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES","nombre":"Consejo Nacional de Desarrollo Económico y Social","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-PRE","nombre":"Presidente","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-GAB","nombre":"Gabinete del Presidente","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CONS","nombre":"Consejería","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-PLN","nombre":"Pleno del CNDES","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-VPS","nombre":"Vicepresidente 1 · Bloque Social","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-VPE","nombre":"Vicepresidente 2 · Bloque Económico","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-LAB","nombre":"Comisión Técnica · Sector Laboral","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-SOC","nombre":"Comisión Técnica · Sector Social","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-CUL","nombre":"Comisión Técnica · Sector Cultural","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-IND","nombre":"Comisión Técnica · Sector Industrial","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-ECO","nombre":"Comisión Técnica · Sector Económico","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-CT-MED","nombre":"Comisión Técnica · Sector Medioambiental","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG","nombre":"Secretaría General","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SGA","nombre":"Secretaría Administrativa","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DIR-AEF","nombre":"Dirección General AEF","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DIR-AEF-CTES","nombre":"Área Contable-Tesorería","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DIR-AEF-PRES","nombre":"Área Presupuesto-Ejecución","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DIR-AEF-COMP","nombre":"Área de Compras y Contratación Pública","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH","nombre":"Departamento de Recursos Humanos y Administración General","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH-TAL","nombre":"Área de Gestión del Talento","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH-NOM","nombre":"Área de Nóminas","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH-LOG","nombre":"Área de Recepción, Logística y Transporte","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH-PER","nombre":"Área de Gestión del Personal","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRH-PAT","nombre":"Área de Servicios y Gestión de Patrimonios","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRD","nombre":"Departamento de Redacción y Documentación","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRD-ARCH","nombre":"Área de Gestión Documental y Archivo","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRD-ACT","nombre":"Área de Redacción y Actas Institucionales","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DRD-PUB","nombre":"Área de Edición y Publicaciones Oficiales","responsable":null,"activa":true}},
+
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DTIC","nombre":"Departamento TIC","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DTIC-RED","nombre":"Área de Redes y Sistemas","responsable":null,"activa":true}},
+  {"model":"maestros.unidadorganica","fields":{"codigo":"CNDES-SG-DTIC-MAT","nombre":"Área de Mantenimiento y Asistencia Técnica","responsable":null,"activa":true}}
+]

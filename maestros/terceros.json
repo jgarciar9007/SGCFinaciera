@@ -1,0 +1,38 @@
+[
+  {
+    "model": "maestros.tercero",
+    "fields": {
+      "tipo": "PROV",
+      "identificacion": "700001",
+      "nombre": "Proveedor Genérico",
+      "email": "",
+      "telefono": "",
+      "direccion": "Malabo",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.tercero",
+    "fields": {
+      "tipo": "EMP",
+      "identificacion": "800001",
+      "nombre": "Empleado Genérico",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "activo": true
+    }
+  },
+  {
+    "model": "maestros.tercero",
+    "fields": {
+      "tipo": "CLI",
+      "identificacion": "900001",
+      "nombre": "Cliente Genérico",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "activo": true
+    }
+  }
+]

@@ -1,0 +1,11 @@
+[
+{
+  "model": "presupuesto.presupuesto",
+  "pk": 1,
+  "fields": {
+    "ejercicio": 2025,
+    "unidad": 20,
+    "nombre": "Ppto 2025 CNDES  AEF-PRES"
+  }
+}
+]

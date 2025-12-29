@@ -1,0 +1,272 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Auth
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      String   @default("USER") // ADMIN, ACCOUNTANT, DIRECTOR, USER
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expenseRequests ExpenseRequest[] @relation("Requester")
+  approvals       ExpenseRequest[] @relation("Approver")
+}
+
+// Accounting (Contabilidad)
+model Account {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  name        String
+  level       Int       @default(1)
+  nature      String    // A, P, K, I, G
+  parentId    Int?
+  isMovement  Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  
+  parent      Account?  @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children    Account[] @relation("AccountHierarchy")
+
+  journalLines JournalLine[]
+  budgetAccounts BudgetAccount[]
+}
+
+// Masters (Maestros)
+model ThirdParty {
+  id             Int     @id @default(autoincrement())
+  type           String  // PROV, EMP, CLI
+  identification String?
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  isActive       Boolean @default(true)
+  journalLines   JournalLine[]
+}
+
+model Program {
+  id       Int     @id @default(autoincrement())
+  code     String  @unique
+  name     String
+  isActive Boolean @default(true)
+}
+
+model Bank {
+  id       Int     @id @default(autoincrement())
+  name     String
+  swift    String?
+  isActive Boolean @default(true)
+}
+
+model JournalEntry {
+  id          Int           @id @default(autoincrement())
+  date        DateTime
+  description String
+  reference   String?       // Link to Invoice #, PO # etc.
+  status      String        @default("POSTED") // DRAFT, POSTED, VOID
+  createdAt   DateTime      @default(now())
+  
+  lines       JournalLine[]
+}
+
+model JournalLine {
+  id             Int          @id @default(autoincrement())
+  journalEntryId Int
+  accountId      Int
+  debit          Decimal      @default(0)
+  credit         Decimal      @default(0)
+  description    String?
+  thirdPartyId   Int?
+
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id])
+  account        Account      @relation(fields: [accountId], references: [id])
+  thirdParty     ThirdParty?  @relation(fields: [thirdPartyId], references: [id])
+}
+
+// Budget (Presupuesto)
+model BudgetAccount {
+  id             Int      @id @default(autoincrement())
+  accountId      Int?     // Link to GL Account if applicable
+  code           String   @unique
+  name           String
+  year           Int
+  allocatedAmount Decimal @default(0)
+  
+  account        Account? @relation(fields: [accountId], references: [id])
+  transactions   BudgetTransaction[]
+  expenseRequests ExpenseRequest[]
+}
+
+model BudgetTransaction {
+  id              Int           @id @default(autoincrement())
+  budgetAccountId Int
+  amount          Decimal       // Negative for usage, positive for allocation/adjustment
+  description     String
+  date            DateTime      @default(now())
+  referenceType   String?       // EXPENSE_REQUEST, INVOICE
+  referenceId     Int?
+
+  budgetAccount   BudgetAccount @relation(fields: [budgetAccountId], references: [id])
+}
+
+// Expense & Procurement (Gastos y Compras)
+model ExpenseRequest {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  approverId  Int?
+  status      String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED, REJECTED, COMPLETED
+  description String
+  totalAmount Decimal
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requester   User     @relation("Requester", fields: [requesterId], references: [id])
+  approver    User?    @relation("Approver", fields: [approverId], references: [id])
+  
+  budgetAccountId Int?
+  budgetAccount   BudgetAccount? @relation(fields: [budgetAccountId], references: [id])
+
+  items       ExpenseItem[]
+  attachments ExpenseAttachment[]
+  quotations  ExpenseQuotation[]
+  purchaseOrder PurchaseOrder?
+}
+
+model ExpenseItem {
+  id               Int            @id @default(autoincrement())
+  expenseRequestId Int
+  description      String
+  quantity         Int
+  unitPrice        Decimal
+  totalPrice       Decimal
+
+  expenseRequest   ExpenseRequest @relation(fields: [expenseRequestId], references: [id])
+}
+
+model ExpenseAttachment {
+  id               Int            @id @default(autoincrement())
+  expenseRequestId Int
+  fileName         String
+  filePath         String
+  uploadDate       DateTime       @default(now())
+
+  expenseRequest   ExpenseRequest @relation(fields: [expenseRequestId], references: [id])
+}
+
+model ExpenseQuotation {
+  id               Int            @id @default(autoincrement())
+  expenseRequestId Int
+  supplierName     String
+  amount           Decimal
+  filePath         String?        // Attachment path
+  isSelected       Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+
+  expenseRequest   ExpenseRequest @relation(fields: [expenseRequestId], references: [id])
+}
+
+model PurchaseOrder {
+  id               Int            @id @default(autoincrement())
+  expenseRequestId Int?           @unique
+  supplierName     String
+  supplierTaxId    String?
+  date             DateTime       @default(now())
+  status           String         @default("ISSUED") // ISSUED, PARTIAL, RECEIVED, CLOSED
+  totalAmount      Decimal
+
+  expenseRequest   ExpenseRequest? @relation(fields: [expenseRequestId], references: [id])
+  receptions       Reception[]
+  invoices         Invoice[]
+  assets           Asset[]
+}
+
+model Reception {
+  id              Int           @id @default(autoincrement())
+  purchaseOrderId Int
+  date            DateTime      @default(now())
+  note            String?
+  
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+}
+
+// Billing & Payments (Facturación y Tesorería)
+model Invoice {
+  id              Int           @id @default(autoincrement())
+  purchaseOrderId Int?
+  number          String        // Factura #
+  supplierName    String
+  date            DateTime
+  dueDate         DateTime?
+  totalAmount     Decimal
+  status          String        @default("UNPAID") // UNPAID, PARTIAL, PAID
+  attachmentPath  String?       // PDF File of invoice
+  
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  payments        Payment[]
+  assets          Asset[]
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  invoiceId     Int
+  bankAccountId Int?
+  amount        Decimal
+  date          DateTime @default(now())
+  reference     String?  // Check #, Transfer #
+
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id])
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id])
+}
+
+model BankAccount {
+  id             Int      @id @default(autoincrement())
+  name           String
+  accountNumber  String
+  bankName       String
+  currentBalance Decimal  @default(0)
+  isActive       Boolean  @default(true)
+
+  payments       Payment[]
+  transactions   BankTransaction[]
+}
+
+model BankTransaction {
+  id            Int      @id @default(autoincrement())
+  bankAccountId Int
+  type          String   // DEPOSIT, WITHDRAWAL
+  amount        Decimal
+  description   String
+  reference     String?
+  date          DateTime @default(now())
+  
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
+}
+
+// Assets (Activos Fijos)
+model Asset {
+  id              Int            @id @default(autoincrement())
+  code            String         @unique // Num Inventario / Placa
+  name            String
+  description     String?
+  purchaseDate    DateTime
+  value           Decimal
+  location        String?
+  status          String         @default("ACTIVE") // ACTIVE, DISPOSED, DEPRECIATED
+  
+  purchaseOrderId Int?
+  invoiceId       Int?
+
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  invoice         Invoice?       @relation(fields: [invoiceId], references: [id])
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
