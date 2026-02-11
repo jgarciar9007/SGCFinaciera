@@ -60,7 +60,7 @@ export const CreateAccountModal = ({ isOpen, onClose, onSuccess }: CreateAccount
                         value={formData.code}
                         onChange={handleChange}
                         placeholder="e.g. 2.1.1.04"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                         required
                     />
                 </div>
@@ -72,7 +72,7 @@ export const CreateAccountModal = ({ isOpen, onClose, onSuccess }: CreateAccount
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="e.g. Materiales de Oficina"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                         required
                     />
                 </div>
@@ -86,7 +86,7 @@ export const CreateAccountModal = ({ isOpen, onClose, onSuccess }: CreateAccount
                         onChange={handleChange}
                         placeholder="0.00"
                         step="0.01"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                         required
                     />
                 </div>
@@ -103,7 +103,7 @@ export const CreateAccountModal = ({ isOpen, onClose, onSuccess }: CreateAccount
                         type="submit"
                         disabled={loading}
                         className={cn(
-                            "px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors",
+                            "px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors",
                             loading && "opacity-70 cursor-not-allowed"
                         )}
                     >

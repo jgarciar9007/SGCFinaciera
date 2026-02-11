@@ -121,7 +121,53 @@ export interface ThirdParty {
     isActive: boolean;
 }
 
-// ... (Program, Bank) ...
+export interface Program {
+    id: number;
+    code: string;
+    name: string;
+    isActive: boolean;
+}
+
+export interface Bank {
+    id: number;
+    name: string;
+    swift?: string;
+    isActive: boolean;
+}
+
+export interface Asset {
+    id: number;
+    code?: string; // Optional
+    name: string;
+    description?: string;
+    purchaseOrderId?: number;
+    invoiceId?: number;
+    location?: string;
+    unitValue: number; // Renamed from value
+    quantity: number; // New field
+    status: 'ACTIVE' | 'DISPOSED' | 'DEPRECIATED' | 'IN_USE';
+    createdAt: string;
+}
+
+export interface Area {
+    id: number;
+    name: string;
+    isActive: boolean;
+}
+
+export interface AssetMovement {
+    id: number;
+    assetId: number;
+    type: 'ASSIGNMENT' | 'RETURN' | 'DISPOSAL' | 'RECEPTION';
+    quantity: number; // New field
+    date: string;
+    assignedToUserId?: number;
+    user?: User; // Joined user
+    areaId?: number;
+    area?: Area;
+    department?: string; // Kept for backward compatibility if needed, or removed.
+    notes?: string;
+}
 
 export interface JournalLine {
     id: number;

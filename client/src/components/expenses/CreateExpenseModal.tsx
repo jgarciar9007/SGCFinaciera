@@ -4,7 +4,7 @@ import { Modal } from '../ui/Modal';
 import { cn } from '../../lib/utils';
 import { Plus, Trash, Upload, X } from 'lucide-react';
 
-import type { BudgetAccount } from '../../types';
+import type { BudgetAccount, ThirdParty } from '../../types';
 
 interface CreateExpenseModalProps {
     isOpen: boolean;
@@ -27,9 +27,14 @@ interface QuotationDraft {
 export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpenseModalProps) => {
     const [description, setDescription] = useState('');
     const [budgetAccounts, setBudgetAccounts] = useState<BudgetAccount[]>([]);
+    const [suppliers, setSuppliers] = useState<ThirdParty[]>([]); // Store suppliers
     const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
     const [items, setItems] = useState<ItemDraft[]>([{ description: '', quantity: 1, unitPrice: 0 }]);
     const [quotations, setQuotations] = useState<QuotationDraft[]>([{ supplierName: '', amount: 0, file: null }]);
+    // New state for creating supplier
+    const [isCreatingSupplier, setIsCreatingSupplier] = useState(false);
+    const [newSupplierName, setNewSupplierName] = useState('');
+
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -37,8 +42,38 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
     useEffect(() => {
         if (isOpen) {
             api.get('/budget').then(res => setBudgetAccounts(res.data)).catch(console.error);
+            fetchSuppliers();
         }
     }, [isOpen]);
+
+    const fetchSuppliers = async () => {
+        try {
+            const res = await api.get('/settings/third-parties'); // Assuming this endpoint returns all
+            const provs = res.data.filter((tp: ThirdParty) => tp.type === 'PROV');
+            setSuppliers(provs);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleCreateSupplier = async (name: string, index: number) => {
+        try {
+            const res = await api.post('/settings/third-parties', {
+                type: 'PROV',
+                name: name,
+                identification: 'PENDIENTE', // Placeholder
+                email: '',
+                phone: '',
+                address: ''
+            });
+            setSuppliers([...suppliers, res.data]);
+            updateQuotation(index, 'supplierName', res.data.name);
+            setIsCreatingSupplier(false);
+        } catch (err) {
+            console.error(err);
+            alert('Error al crear proveedor');
+        }
+    };
 
     const calculateTotal = () => {
         return items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
@@ -133,8 +168,8 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
         }
     };
 
-    const inputClasses = "w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400";
-    const labelClasses = "text-sm font-medium text-gray-700 dark:text-gray-200";
+    const inputClasses = "w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none bg-white text-gray-900 border-gray-300";
+    const labelClasses = "text-sm font-medium text-gray-700";
 
     return (
         <Modal title="Nueva Solicitud de Gasto" isOpen={isOpen} onClose={onClose} className="max-w-2xl">
@@ -204,8 +239,8 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                                         <input
                                             type="number"
                                             min="1"
-                                            value={item.quantity}
-                                            onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
+                                            value={item.quantity === 0 ? '' : item.quantity}
+                                            onChange={(e) => updateItem(index, 'quantity', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                             placeholder="Cant"
                                             className={cn(inputClasses, "w-full text-right")}
                                             required
@@ -216,8 +251,8 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                                             type="number"
                                             min="0"
                                             step="0.01"
-                                            value={item.unitPrice}
-                                            onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                            value={item.unitPrice === 0 ? '' : item.unitPrice}
+                                            onChange={(e) => updateItem(index, 'unitPrice', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                                             placeholder="Precio"
                                             className={cn(inputClasses, "w-full text-right")}
                                             required
@@ -240,12 +275,12 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                         </div>
                     </div>
 
-                    <div className="flex justify-end text-sm font-bold border-t pt-2 dark:border-gray-700">
-                        <span className="dark:text-white">Total: {calculateTotal().toLocaleString()} FCFA</span>
+                    <div className="flex justify-end text-sm font-bold border-t pt-2 border-gray-200">
+                        <span className="text-gray-900">Total: {calculateTotal().toLocaleString()} FCFA</span>
                     </div>
                 </div>
 
-                <div className="space-y-3 border-t pt-4 dark:border-gray-700">
+                <div className="space-y-3 border-t pt-4 border-gray-200">
                     <div className="flex justify-between items-center">
                         <label className={labelClasses}>Cotizaciones / Proformas (Max 3)</label>
                         {quotations.length < 3 && (
@@ -257,26 +292,44 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
 
                     <div className="space-y-3">
                         {quotations.map((q, index) => (
-                            <div key={index} className="flex gap-2 items-start bg-muted/20 dark:bg-gray-700/50 p-2 rounded-md">
+                            <div key={index} className="flex gap-2 items-start bg-gray-50 p-2 rounded-md border border-gray-200">
                                 <div className="space-y-2 flex-1">
-                                    <input
-                                        value={q.supplierName}
-                                        onChange={(e) => updateQuotation(index, 'supplierName', e.target.value)}
-                                        placeholder="Nombre del Proveedor / Tercero"
-                                        className="w-full border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                                        required={quotations.length > 0 && index === 0}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            list={`suppliers-list-${index}`}
+                                            value={q.supplierName}
+                                            onChange={(e) => updateQuotation(index, 'supplierName', e.target.value)}
+                                            placeholder="Buscar o Escribir Proveedor..."
+                                            className="w-full border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 border-gray-300"
+                                            required={quotations.length > 0 && index === 0}
+                                        />
+                                        <datalist id={`suppliers-list-${index}`}>
+                                            {suppliers.map(s => (
+                                                <option key={s.id} value={s.name} />
+                                            ))}
+                                        </datalist>
+
+                                        {q.supplierName && !suppliers.find(s => s.name.toLowerCase() === q.supplierName.toLowerCase()) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCreateSupplier(q.supplierName, index)}
+                                                className="absolute right-2 top-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-2 py-0.5 rounded"
+                                            >
+                                                + Crear
+                                            </button>
+                                        )}
+                                    </div>
                                     <div className="flex gap-2">
                                         <input
                                             type="number"
-                                            value={q.amount}
-                                            onChange={(e) => updateQuotation(index, 'amount', parseFloat(e.target.value) || 0)}
+                                            value={q.amount === 0 ? '' : q.amount}
+                                            onChange={(e) => updateQuotation(index, 'amount', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                                             placeholder="Monto (FCFA)"
                                             className={cn(inputClasses, "w-32")}
                                         />
-                                        <label className="flex-1 flex items-center gap-2 text-xs text-muted-foreground p-1 border rounded bg-background dark:bg-gray-700 dark:border-gray-600 cursor-pointer hover:bg-muted dark:hover:bg-gray-600">
+                                        <label className="flex-1 flex items-center gap-2 text-xs text-muted-foreground p-1 border rounded bg-white border-gray-300 cursor-pointer hover:bg-gray-50">
                                             <Upload className="w-3 h-3" />
-                                            <span className="truncate dark:text-gray-300">
+                                            <span className="truncate text-gray-600">
                                                 {q.file ? q.file.name : 'Adjuntar PDF (Pendiente)'}
                                             </span>
                                             <input
@@ -330,11 +383,11 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                     <p className="text-xs text-muted-foreground">Formatos permitidos: PDF, Imágenes (Max 10MB)</p>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors dark:text-gray-300 dark:hover:bg-gray-700"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                     >
                         Cancelar
                     </button>
@@ -343,7 +396,7 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                         onClick={() => handleSubmit('DRAFT')}
                         disabled={loading}
                         className={cn(
-                            "px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600",
+                            "px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors",
                             loading && "opacity-70 cursor-not-allowed"
                         )}
                     >

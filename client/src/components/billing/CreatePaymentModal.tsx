@@ -29,9 +29,10 @@ export const CreatePaymentModal = ({ isOpen, onClose, onSuccess }: CreatePayment
     }, [isOpen]);
 
     const handleInvoiceChange = (invId: string) => {
-        setSelectedInvoiceId(invId);
-        if (invId) {
-            const inv = invoices.find(i => i.id === Number(invId));
+        const val = invId ? Number(invId) : '';
+        setSelectedInvoiceId(val);
+        if (val) {
+            const inv = invoices.find(i => i.id === val);
             if (inv) {
                 // Default to remaining amount?
                 const paid = inv.payments.reduce((acc, p) => acc + Number(p.amount), 0);
@@ -82,7 +83,7 @@ export const CreatePaymentModal = ({ isOpen, onClose, onSuccess }: CreatePayment
                     <select
                         value={selectedInvoiceId}
                         onChange={(e) => handleInvoiceChange(e.target.value)}
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                         required
                     >
                         <option value="">Seleccione Factura Pendiente...</option>
@@ -117,7 +118,7 @@ export const CreatePaymentModal = ({ isOpen, onClose, onSuccess }: CreatePayment
                         step="0.01"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                         required
                     />
                 </div>
@@ -128,7 +129,7 @@ export const CreatePaymentModal = ({ isOpen, onClose, onSuccess }: CreatePayment
                         value={reference}
                         onChange={(e) => setReference(e.target.value)}
                         placeholder="e.g. Transf. #12345"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                     />
                 </div>
 

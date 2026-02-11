@@ -10,7 +10,8 @@ import {
     Settings,
     LogOut,
     CreditCard,
-    Briefcase
+    Briefcase,
+    PieChart
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -21,6 +22,7 @@ const menuItems = [
     { icon: ShoppingBag, label: 'Compras', path: '/procurement' },
     { icon: CreditCard, label: 'Facturación', path: '/billing' },
     { icon: Landmark, label: 'Tesorería', path: '/treasury' },
+    { icon: PieChart, label: 'Presupuesto', path: '/budget' },
     { icon: Briefcase, label: 'Activos', path: '/assets' },
     { icon: BookOpen, label: 'Contabilidad', path: '/accounting' },
     { icon: Settings, label: 'Configuración', path: '/settings' },

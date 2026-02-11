@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,6 +19,7 @@ model User {
 
   expenseRequests ExpenseRequest[] @relation("Requester")
   approvals       ExpenseRequest[] @relation("Approver")
+  assetMovements  AssetMovement[]
 }
 
 // Accounting (Contabilidad)
@@ -253,13 +254,14 @@ model BankTransaction {
 // Assets (Activos Fijos)
 model Asset {
   id              Int            @id @default(autoincrement())
-  code            String         @unique // Num Inventario / Placa
-  name            String
+  code            String?        // Optional reference code
+  name            String         // Item name (e.g., "Laptop Dell Latitude")
   description     String?
   purchaseDate    DateTime
-  value           Decimal
+  unitValue       Decimal        // Price per unit
+  quantity        Int            @default(1)
   location        String?
-  status          String         @default("ACTIVE") // ACTIVE, DISPOSED, DEPRECIATED
+  status          String         @default("ACTIVE") // ACTIVE, DISPOSED, DEPRECIATED, IN_USE
   
   purchaseOrderId Int?
   invoiceId       Int?
@@ -269,4 +271,30 @@ model Asset {
   
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  movements       AssetMovement[]
+}
+
+model AssetMovement {
+  id          Int      @id @default(autoincrement())
+  assetId     Int
+  type        String   // ASSIGNMENT, RETURN, DISPOSAL, RECEPTION
+  quantity    Int      @default(1) // Number of units moved
+  date        DateTime @default(now())
+  
+  // Assignment details
+  assignedToUserId Int?
+  department      String? // Deprecated - use area relation
+  notes           String?
+
+  asset       Asset    @relation(fields: [assetId], references: [id])
+  user        User?    @relation(fields: [assignedToUserId], references: [id])
+  area        Area?    @relation(fields: [areaId], references: [id])
+  areaId      Int?
+}
+
+model Area {
+  id       Int             @id @default(autoincrement())
+  name     String          @unique
+  isActive Boolean         @default(true)
+  movements AssetMovement[]
 }

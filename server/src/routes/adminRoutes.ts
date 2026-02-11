@@ -1,15 +1,17 @@
 import { Router } from 'express';
-import { clearData } from '../controllers/adminController';
-import { authenticateToken } from '../middleware/auth';
+import { clearData, getUsers, deleteUser, createUser, updateUser, resetPassword } from '../controllers/adminController';
+import { authenticateToken, authorizeRole } from '../middleware/auth';
 
 const router = Router();
 
 router.use(authenticateToken);
+router.use(authorizeRole(['ADMIN']));
 
-// Admin only check should ideally be here or inside controller. 
-// For now, assuming middleware or controller handles it.
-// Adding a simple role check if possible, otherwise rely on controller.
-
+router.post('/users', createUser);
+router.put('/users/:id', updateUser);
+router.patch('/users/:id/reset-password', resetPassword);
+router.get('/users', getUsers);
+router.delete('/users/:id', deleteUser);
 router.post('/clear-data', clearData);
 
 export default router;

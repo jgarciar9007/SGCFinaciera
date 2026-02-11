@@ -42,11 +42,11 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
                     <p className="text-sm text-muted-foreground">Solicitado por: {expense.requester?.fullName} - Total: ${Number(expense.totalAmount).toLocaleString()}</p>
                 </div>
 
-                {expense.quotations && expense.quotations.length > 0 && (
+                {(expense.quotations?.length || 0) > 0 && (
                     <div className="space-y-3">
                         <label className="text-sm font-medium">Seleccionar Cotización Ganadora (Generará Orden de Compra)</label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {expense.quotations.map((q: any) => (
+                            {expense.quotations?.map((q: any) => (
                                 <div
                                     key={q.id}
                                     onClick={() => setSelectedQuotationId(q.id)}
@@ -83,10 +83,10 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
                     </button>
                     <button
                         onClick={() => handleAction('APPROVED')}
-                        disabled={loading || (expense.quotations?.length > 0 && !selectedQuotationId)}
+                        disabled={loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId)}
                         className={cn(
                             "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md",
-                            (loading || (expense.quotations?.length > 0 && !selectedQuotationId)) && "opacity-50 cursor-not-allowed"
+                            (loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId)) && "opacity-50 cursor-not-allowed"
                         )}
                     >
                         <Check className="w-4 h-4" /> Aprobar y Generar Orden

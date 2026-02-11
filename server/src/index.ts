@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -26,7 +27,8 @@ import accountingRoutes from './routes/accountingRoutes';
 import assetRoutes from './routes/assetRoutes';
 import treasuryRoutes from './routes/treasuryRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
-import adminRoutes from './routes/adminRoutes'; // Add this
+import adminRoutes from './routes/adminRoutes';
+import inventoryRoutes from './routes/inventoryRoutes';
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
@@ -40,7 +42,11 @@ app.use('/api/accounting', accountingRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/treasury', treasuryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/admin', adminRoutes); // Add this
+app.use('/api/admin', adminRoutes);
+app.use('/api/inventory', inventoryRoutes);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

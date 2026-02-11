@@ -105,7 +105,7 @@ export function MasterTable<T extends { id: number }>({
                                                 {onDelete && (
                                                     <button
                                                         onClick={() => onDelete(item)}
-                                                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-red-600"
+                                                        className="p-1 hover:bg-gray-200 rounded text-red-600"
                                                     >
                                                         <Trash className="w-4 h-4" />
                                                     </button>

@@ -38,16 +38,16 @@ export const Modal = ({ isOpen, onClose, title, children, className, maxWidth = 
             <div
                 ref={overlayRef}
                 className={cn(
-                    "bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]",
+                    "bg-white rounded-lg shadow-xl w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]",
                     maxWidth,
                     className
                 )}
             >
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 shrink-0">
+                    <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>

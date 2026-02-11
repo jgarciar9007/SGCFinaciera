@@ -24,7 +24,7 @@ export const AccountingPage = () => {
     const fetchJournal = async () => {
         setLoading(true);
         try {
-            const res = await api.get('/accounting/journal');
+            const res = await api.get('/accounting/entries');
             setEntries(res.data);
         } catch (err) {
             console.error(err);
@@ -45,7 +45,7 @@ export const AccountingPage = () => {
     const fetchReport = async () => {
         setLoading(true);
         try {
-            const res = await api.get('/accounting/reports/trial-balance');
+            const res = await api.get('/accounting/trial-balance');
             setReportData(res.data);
         } catch (err) {
             console.error(err);

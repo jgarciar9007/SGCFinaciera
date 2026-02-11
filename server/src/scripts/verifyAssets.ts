@@ -13,7 +13,8 @@ async function main() {
             name: 'Test Computer',
             description: 'Asset created during verification',
             purchaseDate: new Date(),
-            value: 500000,
+            unitValue: 500000,
+            quantity: 1,
             location: 'Server Room',
             status: 'ACTIVE'
         }

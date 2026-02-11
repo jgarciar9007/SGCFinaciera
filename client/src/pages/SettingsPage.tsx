@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { MasterTable } from '../components/settings/MasterTable';
 import { MasterModal } from '../components/settings/MasterModal';
 import { ClearData } from '../components/settings/ClearData';
+import { UserList } from '../components/settings/UserList';
 import api from '../api/client';
 import type { Account, ThirdParty, Program, Bank } from '../types';
 import { cn } from '../lib/utils';
-import { Users, Layers, Book, Building, PieChart, ShieldAlert } from 'lucide-react';
+import { Users, Layers, Book, Building, PieChart, ShieldAlert, UserCog } from 'lucide-react';
 
-type Tab = 'ACCOUNTS' | 'THIRD_PARTIES' | 'PROGRAMS' | 'BANKS' | 'BUDGET' | 'MAINTENANCE';
+type Tab = 'ACCOUNTS' | 'THIRD_PARTIES' | 'PROGRAMS' | 'BANKS' | 'BUDGET' | 'MAINTENANCE' | 'USERS';
 
 export const SettingsPage = () => {
     const [activeTab, setActiveTab] = useState<Tab>('ACCOUNTS');
@@ -38,7 +39,7 @@ export const SettingsPage = () => {
     }, []);
 
     const fetchTabDate = async () => {
-        if (activeTab === 'MAINTENANCE') return;
+        if (activeTab === 'MAINTENANCE' || activeTab === 'USERS') return;
 
         setLoading(true);
         try {
@@ -77,6 +78,7 @@ export const SettingsPage = () => {
     };
 
     const handleDelete = async (item: any) => {
+        if (activeTab === 'USERS') return; // Handled by component
         if (!confirm('¿Está seguro de eliminar este registro?')) return;
         try {
             let url = '';
@@ -195,7 +197,10 @@ export const SettingsPage = () => {
                 <TabButton active={activeTab === 'BANKS'} onClick={() => setActiveTab('BANKS')} icon={<Building className="w-4 h-4" />} label="Bancos" />
                 <TabButton active={activeTab === 'BUDGET'} onClick={() => setActiveTab('BUDGET')} icon={<PieChart className="w-4 h-4" />} label="Presupuesto" />
                 {isAdmin && (
-                    <TabButton active={activeTab === 'MAINTENANCE'} onClick={() => setActiveTab('MAINTENANCE')} icon={<ShieldAlert className="w-4 h-4" />} label="Mantenimiento" />
+                    <>
+                        <TabButton active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} icon={<UserCog className="w-4 h-4" />} label="Usuarios" />
+                        <TabButton active={activeTab === 'MAINTENANCE'} onClick={() => setActiveTab('MAINTENANCE')} icon={<ShieldAlert className="w-4 h-4" />} label="Mantenimiento" />
+                    </>
                 )}
             </div>
 
@@ -204,6 +209,10 @@ export const SettingsPage = () => {
                     <div className="p-6">
                         <h3 className="text-lg font-bold mb-4">Limpieza de Datos de Prueba</h3>
                         <ClearData />
+                    </div>
+                ) : activeTab === 'USERS' ? (
+                    <div className="p-6">
+                        <UserList />
                     </div>
                 ) : (
                     loading ? (

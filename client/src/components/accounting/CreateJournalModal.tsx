@@ -75,7 +75,7 @@ export const CreateJournalModal = ({ isOpen, onClose, onSuccess, accounts }: Cre
 
         setLoading(true);
         try {
-            await api.post('/accounting/journal', {
+            await api.post('/accounting/entries', {
                 date,
                 description,
                 reference,

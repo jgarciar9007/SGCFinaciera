@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
 import { cn } from '../lib/utils';
+import { formatCurrency } from '../lib/formatters';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
@@ -68,7 +69,7 @@ export const DashboardPage = () => {
                 {/* ... StatCards ... */}
                 <StatCard
                     title="Total Tesorería"
-                    value={`${data.totalCash.toLocaleString('fr-FR')} FCFA`}
+                    value={formatCurrency(data.totalCash)}
                     icon={<Wallet className="text-blue-600 w-6 h-6" />}
                     trend="+12% vs mes anterior"
                     color="bg-blue-50 border-blue-100"
@@ -77,14 +78,14 @@ export const DashboardPage = () => {
                     title="Ejecución Presupuestal"
                     value={`${data.budget.percent.toFixed(1)}%`}
                     icon={<TrendingUp className="text-green-600 w-6 h-6" />}
-                    subValue={`De ${data.budget.allocated.toLocaleString('fr-FR')}`}
+                    subValue={`De ${formatCurrency(data.budget.allocated)}`}
                     color="bg-green-50 border-green-100"
                 />
                 <StatCard
                     title="Facturas Pendientes"
                     value={`${data.pendingInvoices.count}`}
                     icon={<AlertCircle className="text-red-600 w-6 h-6" />}
-                    subValue={`Total: ${data.pendingInvoices.amount.toLocaleString('fr-FR')} FCFA`}
+                    subValue={`Total: ${formatCurrency(data.pendingInvoices.amount)}`}
                     color="bg-red-50 border-red-100"
                 />
             </div>
@@ -100,7 +101,7 @@ export const DashboardPage = () => {
                                 <span className="text-xs font-mono text-gray-400">*{acc.accountNumber.slice(-4)}</span>
                             </div>
                             <p className="text-sm font-medium text-gray-500 truncate">{acc.bankName}</p>
-                            <p className="text-lg font-bold text-gray-800">{Number(acc.currentBalance).toLocaleString('fr-FR')} FCFA</p>
+                            <p className="text-lg font-bold text-gray-800">{formatCurrency(Number(acc.currentBalance))}</p>
                         </div>
                     ))}
                     <div
@@ -122,7 +123,7 @@ export const DashboardPage = () => {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                             <YAxis tick={{ fontSize: 12 }} tickFormatter={(val) => `${val / 1000}k`} />
-                            <Tooltip formatter={(val: any) => val.toLocaleString('fr-FR') + ' FCFA'} />
+                            <Tooltip formatter={(val: any) => formatCurrency(val)} />
                             <Bar dataKey="executed" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
                         </BarChart>
                     </ResponsiveContainer>
@@ -145,7 +146,7 @@ export const DashboardPage = () => {
                                     <Cell key={`cell-${index}`} fill={['#3b82f6', '#fbbf24', '#e5e7eb'][index]} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(val: any) => val.toLocaleString('fr-FR') + ' FCFA'} />
+                            <Tooltip formatter={(val: any) => formatCurrency(val)} />
                             <Legend verticalAlign="bottom" height={36} />
                         </PieChart>
                     </ResponsiveContainer>
@@ -170,7 +171,7 @@ export const DashboardPage = () => {
                                     <p className="text-xs text-gray-500 mt-0.5">Por: {exp.requester.fullName}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-sm">{Number(exp.totalAmount).toLocaleString('fr-FR')} FCFA</p>
+                                    <p className="font-bold text-sm">{formatCurrency(Number(exp.totalAmount))}</p>
                                     <p className="text-xs text-gray-400">{format(new Date(exp.updatedAt), 'dd MMM')}</p>
                                 </div>
                             </div>
@@ -199,7 +200,7 @@ export const DashboardPage = () => {
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-sm">{Number(inv.totalAmount).toLocaleString('fr-FR')} FCFA</p>
+                                    <p className="font-bold text-sm">{formatCurrency(Number(inv.totalAmount))}</p>
                                     <p className="text-xs text-gray-400">{format(new Date(inv.date), 'dd MMM')}</p>
                                 </div>
                             </div>

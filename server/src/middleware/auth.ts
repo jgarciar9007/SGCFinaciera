@@ -27,3 +27,13 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
         next();
     });
 };
+
+export const authorizeRole = (roles: string[]) => {
+    return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (!req.user) return res.sendStatus(401);
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({ error: 'Access denied: insufficient permissions' });
+        }
+        next();
+    };
+};

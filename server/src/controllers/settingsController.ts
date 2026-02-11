@@ -141,3 +141,37 @@ export const deleteBank = async (req: Request, res: Response) => {
         res.json({ success: true });
     } catch (error) { res.status(500).json({ error: 'Error deleting item' }); }
 };
+
+// --- AREAS (Departamentos) ---
+export const getAreas = async (req: Request, res: Response) => {
+    try {
+        const items = await prisma.area.findMany({
+            where: { isActive: true },
+            orderBy: { name: 'asc' }
+        });
+        res.json(items);
+    } catch (error) { res.status(500).json({ error: 'Error fetching data' }); }
+};
+
+export const createArea = async (req: Request, res: Response) => {
+    try {
+        const item = await prisma.area.create({ data: req.body });
+        res.json(item);
+    } catch (error) { res.status(500).json({ error: 'Error creating item' }); }
+};
+
+export const updateArea = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const item = await prisma.area.update({ where: { id: parseInt(id) }, data: req.body });
+        res.json(item);
+    } catch (error) { res.status(500).json({ error: 'Error updating item' }); }
+};
+
+export const deleteArea = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await prisma.area.delete({ where: { id: parseInt(id) } });
+        res.json({ success: true });
+    } catch (error) { res.status(500).json({ error: 'Error deleting item' }); }
+};

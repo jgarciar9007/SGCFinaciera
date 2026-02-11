@@ -1,0 +1,50 @@
+
+> client@0.0.0 build
+> tsc -b && vite build
+
+src/components/accounting/BudgetExecutionReport.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/accounting/BudgetExecutionReport.tsx(113,39): error TS6133: 'isLowFunds' is declared but its value is never read.
+src/components/accounting/BudgetHistoryModal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/accounting/TrialBalanceTable.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/assets/CreateAssetModal.tsx(6,35): error TS6133: 'FileText' is declared but its value is never read.
+src/components/assets/CreateAssetModal.tsx(15,11): error TS6133: 'user' is declared but its value is never read.
+src/components/billing/BillingList.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/billing/BillingList.tsx(4,10): error TS6133: 'ChevronDown' is declared but its value is never read.
+src/components/billing/BillingList.tsx(4,23): error TS6133: 'ChevronUp' is declared but its value is never read.
+src/components/billing/BillingList.tsx(4,34): error TS6133: 'Check' is declared but its value is never read.
+src/components/billing/BillingList.tsx(4,41): error TS6133: 'AlertCircle' is declared but its value is never read.
+src/components/billing/CreatePaymentModal.tsx(32,30): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<number | "">'.
+src/components/budget/BudgetAccountList.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/budget/BudgetAccountList.tsx(4,10): error TS6133: 'ChevronRight' is declared but its value is never read.
+src/components/budget/BudgetAccountList.tsx(4,24): error TS6133: 'ChevronDown' is declared but its value is never read.
+src/components/budget/CreateAccountModal.tsx(5,1): error TS6133: 'BudgetAccount' is declared but its value is never read.
+src/components/expenses/CreateExpenseModal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/expenses/ExpenseApprovalModal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/expenses/ExpenseApprovalModal.tsx(4,31): error TS6196: 'ExpenseQuotation' is declared but never used.
+src/components/expenses/ExpenseApprovalModal.tsx(86,47): error TS18048: 'expense.quotations.length' is possibly 'undefined'.
+src/components/expenses/ExpenseApprovalModal.tsx(89,42): error TS18048: 'expense.quotations.length' is possibly 'undefined'.
+src/components/expenses/ExpenseList.tsx(4,69): error TS6133: 'Download' is declared but its value is never read.
+src/components/Layout.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/settings/ClearData.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/settings/MasterModal.tsx(3,24): error TS6196: 'ThirdParty' is declared but never used.
+src/components/settings/MasterModal.tsx(3,36): error TS6196: 'Program' is declared but never used.
+src/components/settings/MasterModal.tsx(3,45): error TS6196: 'Bank' is declared but never used.
+src/components/settings/MasterModal.tsx(4,1): error TS6133: 'cn' is declared but its value is never read.
+src/components/settings/UserList.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/Sidebar.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/Sidebar.tsx(7,5): error TS6133: 'Receipt' is declared but its value is never read.
+src/components/Sidebar.tsx(24,13): error TS2304: Cannot find name 'PieChart'.
+src/components/ToastContainer.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/ToastContainer.tsx(2,20): error TS6133: 'ToastType' is declared but its value is never read.
+src/components/ToastContainer.tsx(2,37): error TS2307: Cannot find module '../../context/ToastContext' or its corresponding type declarations.
+src/components/ToastContainer.tsx(4,20): error TS2307: Cannot find module '../../lib/utils' or its corresponding type declarations.
+src/components/ToastContainer.tsx(11,26): error TS7006: Parameter 'toast' implicitly has an 'any' type.
+src/context/AuthContext.tsx(2,1): error TS6133: 'api' is declared but its value is never read.
+src/pages/AssetsPage.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/AssetsPage.tsx(5,24): error TS6133: 'Tag' is declared but its value is never read.
+src/pages/BillingPage.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/BudgetPage.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/ExpensesPage.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/Modules.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/ProcurementPage.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/TreasuryPage.tsx(30,12): error TS6133: 'loading' is declared but its value is never read.

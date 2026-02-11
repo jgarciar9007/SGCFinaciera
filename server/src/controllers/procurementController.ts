@@ -75,29 +75,84 @@ export const registerReception = async (req: AuthenticatedRequest, res: Response
         const { id } = req.params; // PO ID
         const { note } = req.body;
 
-        const po = await prisma.purchaseOrder.findUnique({ where: { id: parseInt(id) } });
+        const poId = parseInt(id);
+        const po = await prisma.purchaseOrder.findUnique({
+            where: { id: poId },
+            include: {
+                expenseRequest: {
+                    include: { items: true }
+                }
+            }
+        });
 
         if (!po) return res.status(404).json({ error: 'Purchase Order not found' });
 
         // Create reception
         const reception = await prisma.reception.create({
             data: {
-                purchaseOrderId: parseInt(id),
+                purchaseOrderId: poId,
                 note
             }
         });
 
         // Update PO status
         await prisma.purchaseOrder.update({
-            where: { id: parseInt(id) },
+            where: { id: poId },
             data: { status: 'RECEIVED' }
         });
 
-        // Update Expense status to COMPLETED if needed, or keep distinct? 
-        // Let's keep Expense as APPROVED (since it was the request) and PO handles the fulfillment lifecycle.
+        // Auto-create or update Assets from Expense Items (Quantity-based)
+        if (po.expenseRequest && po.expenseRequest.items.length > 0) {
+            for (const item of po.expenseRequest.items) {
+                // Check if asset with same name and PO already exists
+                const existingAsset = await prisma.asset.findFirst({
+                    where: {
+                        name: item.description,
+                        purchaseOrderId: po.id
+                    }
+                });
+
+                let asset;
+                if (existingAsset) {
+                    // Update existing asset quantity
+                    asset = await prisma.asset.update({
+                        where: { id: existingAsset.id },
+                        data: {
+                            quantity: { increment: item.quantity }
+                        }
+                    });
+                } else {
+                    // Create new asset with quantity
+                    asset = await prisma.asset.create({
+                        data: {
+                            name: item.description,
+                            description: `Recibido desde OC #${po.id}`,
+                            code: `AST-${po.id}-${item.id}`, // Optional reference
+                            purchaseOrderId: po.id,
+                            unitValue: item.unitPrice,
+                            quantity: item.quantity,
+                            status: 'ACTIVE',
+                            location: 'Bodega Central',
+                            purchaseDate: po.date
+                        }
+                    });
+                }
+
+                // Log reception movement
+                await prisma.assetMovement.create({
+                    data: {
+                        assetId: asset.id,
+                        type: 'RECEPTION',
+                        quantity: item.quantity,
+                        notes: `Recepción desde OC #${po.id}`
+                    }
+                });
+            }
+        }
 
         res.json(reception);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to register reception' });
     }
 };

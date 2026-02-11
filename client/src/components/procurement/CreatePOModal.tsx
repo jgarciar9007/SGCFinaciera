@@ -18,6 +18,9 @@ export const CreatePOModal = ({ isOpen, onClose, onSuccess }: CreatePOModalProps
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const inputClasses = "w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none bg-white text-gray-900 border-gray-300";
+    const labelClasses = "text-sm font-medium text-gray-700";
+
     // Fetch only APPROVED expenses
     const fetchApprovedExpenses = async () => {
         try {
@@ -71,11 +74,11 @@ export const CreatePOModal = ({ isOpen, onClose, onSuccess }: CreatePOModalProps
                 )}
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Seleccionar Gasto Aprobado</label>
+                    <label className={labelClasses}>Seleccionar Gasto Aprobado</label>
                     <select
                         value={selectedExpenseId}
                         onChange={(e) => setSelectedExpenseId(e.target.value)}
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className={inputClasses}
                         required
                     >
                         <option value="">Seleccione...</option>
@@ -88,10 +91,10 @@ export const CreatePOModal = ({ isOpen, onClose, onSuccess }: CreatePOModalProps
                 </div>
 
                 {selectedExpense && (
-                    <div className="p-3 bg-muted rounded-md text-sm space-y-1">
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-sm space-y-1 text-gray-700">
                         <p><strong>Solicitante:</strong> {selectedExpense.requester?.fullName}</p>
                         <p><strong>Total:</strong> {selectedExpense.totalAmount.toLocaleString('fr-FR')} FCFA</p>
-                        <ul className="list-disc list-inside pl-1 text-muted-foreground text-xs mt-2">
+                        <ul className="list-disc list-inside pl-1 text-gray-500 text-xs mt-2">
                             {selectedExpense.items.map(item => (
                                 <li key={item.id}>{item.description} (x{item.quantity})</li>
                             ))}
@@ -100,23 +103,23 @@ export const CreatePOModal = ({ isOpen, onClose, onSuccess }: CreatePOModalProps
                 )}
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Proveedor / Beneficiario</label>
+                    <label className={labelClasses}>Proveedor / Beneficiario</label>
                     <input
                         value={supplierName}
                         onChange={(e) => setSupplierName(e.target.value)}
                         placeholder="Razón Social"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className={inputClasses}
                         required
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">RUC / ID Tributario</label>
+                    <label className={labelClasses}>RUC / ID Tributario</label>
                     <input
                         value={supplierTaxId}
                         onChange={(e) => setSupplierTaxId(e.target.value)}
                         placeholder="Número de Identificación"
-                        className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600"
+                        className={inputClasses}
                     />
                 </div>
 

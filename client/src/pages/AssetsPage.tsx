@@ -1,15 +1,18 @@
-
+// AssetsPage.tsx - Simplified for Quantity-Based Inventory
 import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import type { Asset } from '../types';
-import { Plus, Search, Tag, MapPin } from 'lucide-react';
+import { Plus, Search, ArrowRightLeft } from 'lucide-react';
 import { CreateAssetModal } from '../components/assets/CreateAssetModal';
+import { MovementModal } from '../components/assets/MovementModal';
 import { cn } from '../lib/utils';
 
 export const AssetsPage = () => {
     const [assets, setAssets] = useState<Asset[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+    const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchAssets = async () => {
@@ -30,83 +33,101 @@ export const AssetsPage = () => {
 
     const filteredAssets = assets.filter(asset =>
         asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        asset.code.toLowerCase().includes(searchTerm.toLowerCase())
+        (asset.code && asset.code.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Activos Fijos</h2>
-                    <p className="text-muted-foreground">Gestión de inventario y activos de la entidad.</p>
-                </div>
+                <h1 className="text-2xl font-bold">Activos Fijos</h1>
                 <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                    <Plus className="w-4 h-4" /> Nuevo Activo
+                    <Plus className="w-4 h-4" />
+                    Nuevo Activo
                 </button>
             </div>
 
-            <div className="rounded-md border bg-card text-card-foreground shadow-sm">
+            <div className="bg-white rounded-lg shadow">
                 <div className="p-4 border-b">
                     <div className="relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder="Buscar por nombre o código..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 bg-background border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            className="w-full pl-10 pr-4 py-2 border rounded-md"
                         />
                     </div>
                 </div>
 
-                <div className="relative w-full overflow-auto">
+                <div className="overflow-x-auto">
                     <table className="w-full caption-bottom text-sm text-left">
                         <thead className="bg-muted/50 [&_tr]:border-b">
                             <tr>
                                 <th className="h-12 px-4 font-medium text-muted-foreground">Código</th>
                                 <th className="h-12 px-4 font-medium text-muted-foreground">Nombre</th>
+                                <th className="h-12 px-4 font-medium text-muted-foreground text-center">Cantidad</th>
                                 <th className="h-12 px-4 font-medium text-muted-foreground">Ubicación</th>
-                                <th className="h-12 px-4 font-medium text-muted-foreground text-right">Valor</th>
+                                <th className="h-12 px-4 font-medium text-muted-foreground text-right">Valor Unitario</th>
                                 <th className="h-12 px-4 font-medium text-muted-foreground text-center">Estado</th>
-                                <th className="h-12 px-4 font-medium text-muted-foreground">Origen</th>
+                                <th className="h-12 px-4 font-medium text-muted-foreground">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
                             {loading ? (
-                                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Cargando activos...</td></tr>
+                                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Cargando inventario...</td></tr>
                             ) : filteredAssets.length === 0 ? (
-                                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No hay activos registrados.</td></tr>
+                                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">No hay activos registrados.</td></tr>
                             ) : (
                                 filteredAssets.map((asset) => (
                                     <tr key={asset.id} className="hover:bg-muted/50">
-                                        <td className="p-4 font-mono font-medium">{asset.code}</td>
+                                        <td className="p-4 font-mono text-xs">{asset.code || '-'}</td>
                                         <td className="p-4">
                                             <div className="flex flex-col">
                                                 <span className="font-medium">{asset.name}</span>
-                                                <span className="text-xs text-muted-foreground line-clamp-1">{asset.description}</span>
+                                                {asset.description && (
+                                                    <span className="text-xs text-muted-foreground line-clamp-1">{asset.description}</span>
+                                                )}
                                             </div>
                                         </td>
-                                        <td className="p-4 text-muted-foreground flex items-center gap-2">
-                                            {asset.location && <MapPin className="w-3 h-3" />} {asset.location || '-'}
+                                        <td className="p-4 text-center">
+                                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">
+                                                {asset.quantity}
+                                            </span>
                                         </td>
+                                        <td className="p-4 text-muted-foreground">{asset.location || '-'}</td>
                                         <td className="p-4 text-right font-medium">
-                                            {Number(asset.value).toLocaleString('fr-FR')} FCFA
+                                            {Number(asset.unitValue).toLocaleString('fr-FR')} FCFA
                                         </td>
                                         <td className="p-4 text-center">
                                             <span className={cn(
                                                 "px-2 py-1 rounded-full text-xs font-semibold",
                                                 asset.status === 'ACTIVE' ? "bg-green-100 text-green-700" :
-                                                    asset.status === 'DISPOSED' ? "bg-red-100 text-red-700" :
-                                                        "bg-yellow-100 text-yellow-700"
+                                                    asset.status === 'IN_USE' ? "bg-blue-100 text-blue-700" :
+                                                        asset.status === 'DISPOSED' ? "bg-red-100 text-red-700" :
+                                                            "bg-yellow-100 text-yellow-700"
                                             )}>
-                                                {asset.status === 'ACTIVE' ? 'Activo' : asset.status === 'DISPOSED' ? 'Baja' : 'Depreciado'}
+                                                {asset.status === 'ACTIVE' ? 'Bodega' :
+                                                    asset.status === 'IN_USE' ? 'En Uso' :
+                                                        asset.status === 'DISPOSED' ? 'Baja' : 'Depreciado'}
                                             </span>
                                         </td>
-                                        <td className="p-4 text-xs text-muted-foreground">
-                                            {asset.purchaseOrderId ? `OC #${asset.purchaseOrderId}` : asset.invoiceId ? `Fact #${asset.invoiceId}` : 'Manual'}
+                                        <td className="p-4">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedAsset(asset);
+                                                    setIsMovementModalOpen(true);
+                                                }}
+                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+                                                title="Registrar Movimiento"
+                                                disabled={asset.quantity === 0}
+                                            >
+                                                <ArrowRightLeft className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Mover</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -116,11 +137,30 @@ export const AssetsPage = () => {
                 </div>
             </div>
 
-            <CreateAssetModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSuccess={fetchAssets}
-            />
+            {isCreateModalOpen && (
+                <CreateAssetModal
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSuccess={() => {
+                        setIsCreateModalOpen(false);
+                        fetchAssets();
+                    }}
+                />
+            )}
+
+            {isMovementModalOpen && selectedAsset && (
+                <MovementModal
+                    asset={selectedAsset}
+                    onClose={() => {
+                        setIsMovementModalOpen(false);
+                        setSelectedAsset(null);
+                    }}
+                    onSuccess={() => {
+                        setIsMovementModalOpen(false);
+                        setSelectedAsset(null);
+                        fetchAssets();
+                    }}
+                />
+            )}
         </div>
     );
 };
