@@ -88,6 +88,40 @@ export const TreasuryPage = () => {
         }
     };
 
+    const [pendingPayments, setPendingPayments] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (selectedAccount) {
+            fetchPendingPayments(selectedAccount.id);
+        }
+    }, [selectedAccount]);
+
+    const fetchPendingPayments = async (accountId: number) => {
+        try {
+            const res = await api.get('/billing/payments', {
+                params: { bankAccountId: accountId, status: 'PENDING' }
+            });
+            setPendingPayments(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleConciliate = async (paymentId: number) => {
+        if (!confirm('¿Confirmar conciliación de este pago? Esto afectará la ejecución presupuestal.')) return;
+        try {
+            await api.post(`/treasury/payments/${paymentId}/conciliate`);
+            alert('Pago conciliado correctamente');
+            if (selectedAccount) {
+                fetchPendingPayments(selectedAccount.id);
+                fetchAccounts(); // Refresh to see any updates
+            }
+        } catch (error: any) {
+            console.error(error);
+            alert(error.response?.data?.error || 'Error al conciliar pago');
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -145,62 +179,110 @@ export const TreasuryPage = () => {
             </div>
 
             {selectedAccount && (
-                <div className="bg-white border rounded-lg shadow-sm min-h-[400px]">
-                    <div className="p-4 border-b flex justify-between items-center">
-                        <h3 className="font-bold text-lg">Movimientos: {selectedAccount.name}</h3>
-                        <button
-                            onClick={() => setIsTxModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
-                        >
-                            <Plus className="w-4 h-4" /> Registrar Movimiento
-                        </button>
-                    </div>
+                <div className="space-y-6">
+                    {/* Pending Reconciliation Section */}
+                    {pendingPayments.length > 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                Pagos Pendientes de Conciliación ({pendingPayments.length})
+                            </h3>
+                            <div className="overflow-x-auto bg-white rounded border">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-50 border-b text-gray-500">
+                                        <tr>
+                                            <th className="p-3 font-medium">Fecha</th>
+                                            <th className="p-3 font-medium">Referencia</th>
+                                            <th className="p-3 font-medium">Factura</th>
+                                            <th className="p-3 font-medium text-right">Monto</th>
+                                            <th className="p-3 font-medium text-right">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y">
+                                        {pendingPayments.map(p => (
+                                            <tr key={p.id} className="hover:bg-gray-50">
+                                                <td className="p-3">{format(new Date(p.date), 'dd/MM/yyyy')}</td>
+                                                <td className="p-3 font-mono text-xs">{p.reference || '-'}</td>
+                                                <td className="p-3">
+                                                    {p.invoice ? `${p.invoice.number} - ${p.invoice.supplierName}` : 'N/A'}
+                                                </td>
+                                                <td className="p-3 text-right font-bold">
+                                                    {Number(p.amount).toLocaleString('fr-FR')} FCFA
+                                                </td>
+                                                <td className="p-3 text-right">
+                                                    <button
+                                                        onClick={() => handleConciliate(p.id)}
+                                                        className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
+                                                    >
+                                                        Conciliar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 border-b text-gray-500">
-                                <tr>
-                                    <th className="p-4 font-medium">Fecha</th>
-                                    <th className="p-4 font-medium">Descripción</th>
-                                    <th className="p-4 font-medium">Referencia</th>
-                                    <th className="p-4 font-medium text-right">Monto</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {selectedAccount.transactions && selectedAccount.transactions.length > 0 ? (
-                                    selectedAccount.transactions.map(tx => (
-                                        <tr key={tx.id} className="hover:bg-gray-50">
-                                            <td className="p-4 text-gray-600">
-                                                {format(new Date(tx.date), 'dd MMM yyyy', { locale: es })}
-                                            </td>
-                                            <td className="p-4 font-medium">
-                                                <div className="flex items-center gap-2">
-                                                    {tx.type === 'DEPOSIT' ? (
-                                                        <ArrowDownLeft className="w-4 h-4 text-green-500" />
-                                                    ) : (
-                                                        <ArrowUpRight className="w-4 h-4 text-red-500" />
-                                                    )}
-                                                    {tx.description}
-                                                </div>
-                                            </td>
-                                            <td className="p-4 text-gray-500 text-xs font-mono">{tx.reference || '-'}</td>
-                                            <td className={cn(
-                                                "p-4 text-right font-bold",
-                                                tx.type === 'DEPOSIT' ? "text-green-600" : "text-red-600"
-                                            )}>
-                                                {tx.type === 'DEPOSIT' ? '+' : '-'} {Number(tx.amount).toLocaleString('fr-FR')} FCFA
+                    {/* Historical Transactions */}
+                    <div className="bg-white border rounded-lg shadow-sm min-h-[400px]">
+                        <div className="p-4 border-b flex justify-between items-center">
+                            <h3 className="font-bold text-lg">Movimientos Históricos</h3>
+                            <button
+                                onClick={() => setIsTxModalOpen(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                            >
+                                <Plus className="w-4 h-4" /> Registrar Movimiento Manual
+                            </button>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50 border-b text-gray-500">
+                                    <tr>
+                                        <th className="p-4 font-medium">Fecha</th>
+                                        <th className="p-4 font-medium">Descripción</th>
+                                        <th className="p-4 font-medium">Referencia</th>
+                                        <th className="p-4 font-medium text-right">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">
+                                    {selectedAccount.transactions && selectedAccount.transactions.length > 0 ? (
+                                        selectedAccount.transactions.map(tx => (
+                                            <tr key={tx.id} className="hover:bg-gray-50">
+                                                <td className="p-4 text-gray-600">
+                                                    {format(new Date(tx.date), 'dd MMM yyyy', { locale: es })}
+                                                </td>
+                                                <td className="p-4 font-medium">
+                                                    <div className="flex items-center gap-2">
+                                                        {tx.type === 'DEPOSIT' ? (
+                                                            <ArrowDownLeft className="w-4 h-4 text-green-500" />
+                                                        ) : (
+                                                            <ArrowUpRight className="w-4 h-4 text-red-500" />
+                                                        )}
+                                                        {tx.description}
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 text-gray-500 text-xs font-mono">{tx.reference || '-'}</td>
+                                                <td className={cn(
+                                                    "p-4 text-right font-bold",
+                                                    tx.type === 'DEPOSIT' ? "text-green-600" : "text-red-600"
+                                                )}>
+                                                    {tx.type === 'DEPOSIT' ? '+' : '-'} {Number(tx.amount).toLocaleString('fr-FR')} FCFA
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="p-8 text-center text-gray-500">
+                                                No hay movimientos recientes
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={4} className="p-8 text-center text-gray-500">
-                                            No hay movimientos recientes
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}

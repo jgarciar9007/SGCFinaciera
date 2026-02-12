@@ -104,6 +104,7 @@ model BudgetAccount {
   account        Account? @relation(fields: [accountId], references: [id])
   transactions   BudgetTransaction[]
   expenseRequests ExpenseRequest[]
+  purchaseOrders  PurchaseOrder[]
 }
 
 model BudgetTransaction {
@@ -182,8 +183,10 @@ model PurchaseOrder {
   date             DateTime       @default(now())
   status           String         @default("ISSUED") // ISSUED, PARTIAL, RECEIVED, CLOSED
   totalAmount      Decimal
+  budgetAccountId  Int?           // Linked Budget Account for commitments
 
   expenseRequest   ExpenseRequest? @relation(fields: [expenseRequestId], references: [id])
+  budgetAccount    BudgetAccount?  @relation(fields: [budgetAccountId], references: [id])
   receptions       Reception[]
   invoices         Invoice[]
   assets           Asset[]
@@ -222,6 +225,8 @@ model Payment {
   amount        Decimal
   date          DateTime @default(now())
   reference     String?  // Check #, Transfer #
+  status        String   @default("PENDING") // PENDING, RECONCILED
+  reconciledAt  DateTime?
 
   invoice       Invoice  @relation(fields: [invoiceId], references: [id])
   bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id])

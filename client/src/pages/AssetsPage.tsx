@@ -19,9 +19,19 @@ export const AssetsPage = () => {
         setLoading(true);
         try {
             const res = await api.get('/assets');
-            setAssets(res.data);
+            // Ensure we always set an array
+            const data = res.data;
+            if (Array.isArray(data)) {
+                setAssets(data);
+            } else if (data && Array.isArray(data.data)) {
+                setAssets(data.data);
+            } else {
+                console.error('Invalid assets response:', data);
+                setAssets([]);
+            }
         } catch (error) {
             console.error('Failed to fetch assets', error);
+            setAssets([]);
         } finally {
             setLoading(false);
         }
@@ -139,6 +149,7 @@ export const AssetsPage = () => {
 
             {isCreateModalOpen && (
                 <CreateAssetModal
+                    isOpen={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
                     onSuccess={() => {
                         setIsCreateModalOpen(false);
@@ -149,6 +160,7 @@ export const AssetsPage = () => {
 
             {isMovementModalOpen && selectedAsset && (
                 <MovementModal
+                    isOpen={isMovementModalOpen}
                     asset={selectedAsset}
                     onClose={() => {
                         setIsMovementModalOpen(false);

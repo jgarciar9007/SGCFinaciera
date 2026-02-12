@@ -1,73 +1,120 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('Seeding database...');
+    console.log('🌱 Iniciando seed de la base de datos...\n');
 
-    // 1. Users
-    const password = 'Cndes2026*';
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Limpiar datos existentes (excepto usuarios admin)
+    console.log('🧹 Limpiando datos anteriores...');
+    await prisma.budgetTransaction.deleteMany({});
+    await prisma.budgetAccount.deleteMany({});
+    await prisma.journalLine.deleteMany({});
+    await prisma.journalEntry.deleteMany({});
+    await prisma.thirdParty.deleteMany({});
+    await prisma.payment.deleteMany({}); // Added cleanup for Payment
+    await prisma.bankTransaction.deleteMany({}); // Added cleanup
+    await prisma.bankAccount.deleteMany({});
+    await prisma.bank.deleteMany({});
+    await prisma.program.deleteMany({});
+    await prisma.area.deleteMany({});
+    await prisma.account.deleteMany({});
+    console.log('✅ Datos anteriores eliminados\n');
 
-    const admin = await prisma.user.upsert({
-        where: { email: 'admin@cndes.com' },
+    // 1. USUARIOS
+    console.log('👥 Creando usuarios...');
+    const password = await bcrypt.hash('admin123', 10);
+
+    await prisma.user.upsert({
+        where: { email: 'admin@example.com' },
         update: {},
         create: {
-            email: 'admin@cndes.com',
+            email: 'admin@example.com',
             fullName: 'Administrador Sistema',
-            password: hashedPassword,
+            password,
             role: 'ADMIN',
         },
     });
 
-    const accountant = await prisma.user.upsert({
-        where: { email: 'contador@cndes.com' },
+    await prisma.user.upsert({
+        where: { email: 'contador@example.com' },
         update: {},
         create: {
-            email: 'contador@cndes.com',
-            fullName: 'Contador Principal',
-            password: hashedPassword,
+            email: 'contador@example.com',
+            fullName: 'María González - Contador',
+            password,
             role: 'ACCOUNTANT',
         },
     });
 
-    const director = await prisma.user.upsert({
-        where: { email: 'director@cndes.com' },
+    await prisma.user.upsert({
+        where: { email: 'director@example.com' },
         update: {},
         create: {
-            email: 'director@cndes.com',
-            fullName: 'Director General',
-            password: hashedPassword,
+            email: 'director@example.com',
+            fullName: 'Carlos Rodríguez - Director',
+            password,
             role: 'DIRECTOR',
         },
     });
 
-    console.log('Users seeded.');
+    await prisma.user.upsert({
+        where: { email: 'usuario@example.com' },
+        update: {},
+        create: {
+            email: 'usuario@example.com',
+            fullName: 'Ana Martínez - Usuario',
+            password,
+            role: 'USER',
+        },
+    });
 
-    // 2. Accounting (Plan de Cuentas Básico)
-    const accountsData = [
-        // Activos
-        { code: '1', name: 'ACTIVO', nature: 'A', level: 1 },
-        { code: '11', name: 'EFECTIVO Y EQUIVALENTES', nature: 'A', level: 2, parentCode: '1' },
-        { code: '1105', name: 'CAJA', nature: 'A', level: 3, parentCode: '11', isMovement: true },
-        { code: '1110', name: 'BANCOS', nature: 'A', level: 3, parentCode: '11', isMovement: true },
-        // Pasivos
-        { code: '2', name: 'PASIVO', nature: 'P', level: 1 },
-        { code: '23', name: 'CUENTAS POR PAGAR', nature: 'P', level: 2, parentCode: '2' },
-        { code: '2335', name: 'COSTOS Y GASTOS POR PAGAR', nature: 'P', level: 3, parentCode: '23', isMovement: true },
-        // Patrimonio
-        { code: '3', name: 'PATRIMONIO', nature: 'K', level: 1 },
-        // Ingresos
-        { code: '4', name: 'INGRESOS', nature: 'I', level: 1 },
-        { code: '41', name: 'INGRESOS OPERACIONALES', nature: 'I', level: 2, parentCode: '4' },
-        { code: '4155', name: 'ACTIVIDADES INMOBILIARIAS', nature: 'I', level: 3, parentCode: '41', isMovement: true },
-        // Gastos
-        { code: '5', name: 'GASTOS', nature: 'G', level: 1 },
-        { code: '51', name: 'ADMINISTRACION', nature: 'G', level: 2, parentCode: '5' },
-        { code: '5105', name: 'GASTOS DE PERSONAL', nature: 'G', level: 3, parentCode: '51', isMovement: true },
-        { code: '5111', name: 'GENERALES', nature: 'G', level: 3, parentCode: '51', isMovement: true },
-    ];
+    console.log('✅ Usuarios creados\n');
+
+    // 2. PLAN DE CUENTAS CONTABLES
+    console.log('📊 Creando plan de cuentas...');
+    const accountsData: Array<{
+        code: string;
+        name: string;
+        nature: 'ACTIVE' | 'PASSIVE' | 'INCOME' | 'EXPENSE';
+        level: number;
+        parentCode?: string;
+        isMovement?: boolean;
+    }> = [
+            // ACTIVOS
+            { code: '1', name: 'ACTIVO', nature: 'ACTIVE', level: 1 },
+            { code: '11', name: 'EFECTIVO Y EQUIVALENTES', nature: 'ACTIVE', level: 2, parentCode: '1' },
+            { code: '1105', name: 'CAJA GENERAL', nature: 'ACTIVE', level: 3, parentCode: '11', isMovement: true },
+            { code: '1110', name: 'BANCOS', nature: 'ACTIVE', level: 3, parentCode: '11', isMovement: true },
+            { code: '15', name: 'PROPIEDAD PLANTA Y EQUIPO', nature: 'ACTIVE', level: 2, parentCode: '1' },
+            { code: '1524', name: 'EQUIPO DE OFICINA', nature: 'ACTIVE', level: 3, parentCode: '15', isMovement: true },
+            { code: '1528', name: 'EQUIPO DE COMPUTACIÓN', nature: 'ACTIVE', level: 3, parentCode: '15', isMovement: true },
+
+            // PASIVOS
+            { code: '2', name: 'PASIVO', nature: 'PASSIVE', level: 1 },
+            { code: '23', name: 'CUENTAS POR PAGAR', nature: 'PASSIVE', level: 2, parentCode: '2' },
+            { code: '2335', name: 'COSTOS Y GASTOS POR PAGAR', nature: 'PASSIVE', level: 3, parentCode: '23', isMovement: true },
+
+            // PATRIMONIO
+            { code: '3', name: 'PATRIMONIO', nature: 'PASSIVE', level: 1 },
+            { code: '31', name: 'CAPITAL SOCIAL', nature: 'PASSIVE', level: 2, parentCode: '3' },
+            { code: '3105', name: 'CAPITAL AUTORIZADO', nature: 'PASSIVE', level: 3, parentCode: '31', isMovement: true },
+
+            // INGRESOS
+            { code: '4', name: 'INGRESOS', nature: 'INCOME', level: 1 },
+            { code: '41', name: 'INGRESOS OPERACIONALES', nature: 'INCOME', level: 2, parentCode: '4' },
+            { code: '4155', name: 'ACTIVIDADES INMOBILIARIAS', nature: 'INCOME', level: 3, parentCode: '41', isMovement: true },
+
+            // GASTOS
+            { code: '5', name: 'GASTOS', nature: 'EXPENSE', level: 1 },
+            { code: '51', name: 'GASTOS DE ADMINISTRACIÓN', nature: 'EXPENSE', level: 2, parentCode: '5' },
+            { code: '5105', name: 'GASTOS DE PERSONAL', nature: 'EXPENSE', level: 3, parentCode: '51', isMovement: true },
+            { code: '5110', name: 'HONORARIOS', nature: 'EXPENSE', level: 3, parentCode: '51', isMovement: true },
+            { code: '5120', name: 'ARRENDAMIENTOS', nature: 'EXPENSE', level: 3, parentCode: '51', isMovement: true },
+            { code: '5135', name: 'SERVICIOS', nature: 'EXPENSE', level: 3, parentCode: '51', isMovement: true },
+            { code: '5195', name: 'DIVERSOS', nature: 'EXPENSE', level: 3, parentCode: '51', isMovement: true },
+        ];
 
     for (const acc of accountsData) {
         let parentId = null;
@@ -76,10 +123,8 @@ async function main() {
             parentId = parent?.id;
         }
 
-        await prisma.account.upsert({
-            where: { code: acc.code },
-            update: {},
-            create: {
+        await prisma.account.create({
+            data: {
                 code: acc.code,
                 name: acc.name,
                 nature: acc.nature,
@@ -89,74 +134,123 @@ async function main() {
             },
         });
     }
-    console.log('Chart of Accounts seeded.');
+    console.log('✅ Plan de cuentas creado\n');
 
-    // 3. Areas (Departamentos)
-    const areas = [
+    // 3. ÁREAS
+    console.log('🏢 Creando áreas...');
+    const areasData = [
         'Dirección General',
         'Contabilidad y Finanzas',
         'Recursos Humanos',
         'Tecnología (TI)',
-        'Jurídica',
-        'Bodega Central',
-        'Recepción'
+        'Compras y Adquisiciones',
+        'Bodega Central'
     ];
 
-    for (const name of areas) {
-        await prisma.area.upsert({
-            where: { name },
-            update: {},
-            create: { name }
+    for (const name of areasData) {
+        await prisma.area.create({ data: { name } });
+    }
+    console.log('✅ Áreas creadas\n');
+
+    // 4. PROGRAMAS
+    console.log('📋 Creando programas...');
+    const programsData = [
+        { code: 'P001', name: 'Fortalecimiento Institucional' },
+        { code: 'P002', name: 'Desarrollo Comunitario' },
+        { code: 'P003', name: 'Infraestructura' },
+    ];
+
+    for (const prog of programsData) {
+        await prisma.program.create({
+            data: {
+                code: prog.code,
+                name: prog.name,
+                isActive: true,
+            },
         });
     }
-    console.log('Areas seeded.');
+    console.log('✅ Programas creados\n');
 
-    // 4. Programs
-    await prisma.program.upsert({
-        where: { code: 'P01' },
-        update: {},
-        create: {
-            code: 'P01',
-            name: 'Fortalecimiento Institucional',
-            isActive: true,
-        },
+    // 5. BANCOS Y CUENTAS BANCARIAS
+    console.log('🏦 Creando bancos y cuentas bancarias...');
+    await prisma.bank.create({
+        data: { name: 'Banco Nacional', swift: 'BNAC123', isActive: true }
     });
-    console.log('Programs seeded.');
 
-    // 5. Banks
-    const bank = await prisma.bank.create({
+    await prisma.bank.create({
+        data: { name: 'Banco Internacional', swift: 'BINT456', isActive: true }
+    });
+
+    await prisma.bankAccount.create({
         data: {
-            name: 'Banco Nacional',
-            swift: 'BNAC123',
+            name: 'Cuenta Corriente Operativa',
+            accountNumber: '1001-2001-3001-4001',
+            bankName: 'Banco Nacional',
+            currentBalance: new Prisma.Decimal(50000000),
             isActive: true,
         }
     });
 
     await prisma.bankAccount.create({
         data: {
-            name: 'Cuenta Corriente Operativa',
-            accountNumber: '111-222-333-444',
-            bankName: bank.name,
-            currentBalance: 0, // Start with 0 balance for clean slate? Or maybe 50M is capital? Let's keep 0 or capital. User said "remove movements". Balance IS a movement essentially. But let's leave 0 for purity.
+            name: 'Cuenta de Ahorros',
+            accountNumber: '2002-3002-4002-5002',
+            bankName: 'Banco Internacional',
+            currentBalance: new Prisma.Decimal(25000000),
             isActive: true,
         }
     });
-    console.log('Banks seeded.');
 
-    // 6. Budget (Master Data - Configuración Inicial)
-    // Link Budget Accounts to Expense Accounts (Group 5)
-    // Budget Account 1: Personal
-    await prisma.budgetAccount.upsert({
-        where: { code: 'XP-001' },
-        update: {},
-        create: {
-            code: 'XP-001',
+    console.log('✅ Bancos y cuentas creados\n');
+
+    // 6. TERCEROS
+    console.log('👔 Creando terceros...');
+    await prisma.thirdParty.create({
+        data: {
+            name: 'Papelería Central S.A.',
+            type: 'SUPPLIER',
+            // contact removed
+            phone: '+237 6 70 00 00 01',
+            email: 'ventas@papeleriacentral.com',
+            isActive: true,
+        }
+    });
+
+    await prisma.thirdParty.create({
+        data: {
+            name: 'Servicios Tecnológicos Ltd.',
+            type: 'SUPPLIER',
+            // contact removed
+            phone: '+237 6 70 00 00 02',
+            email: 'info@servitec.com',
+            isActive: true,
+        }
+    });
+
+    await prisma.thirdParty.create({
+        data: {
+            name: 'Cliente Corporativo A',
+            type: 'CLIENT',
+            // contact removed
+            phone: '+237 6 70 00 01 01',
+            email: 'ana@clientea.com',
+            isActive: true,
+        }
+    });
+
+    console.log('✅ Terceros creados\n');
+
+    // 7. PRESUPUESTO
+    console.log('💰 Creando cuentas presupuestales...');
+    await prisma.budgetAccount.create({
+        data: {
+            code: 'BP-001',
             name: 'Nómina y Salarios',
             year: 2026,
-            allocatedAmount: 120000000, // This is 'allocated', arguably a setup value.
+            allocatedAmount: new Prisma.Decimal(120000000),
             transactions: {
                 create: {
-                    amount: 120000000,
+                    amount: new Prisma.Decimal(120000000),
                     description: 'Asignación Inicial 2026',
                     referenceType: 'INITIAL',
                 }
@@ -164,32 +258,35 @@ async function main() {
         }
     });
 
-    // Budget Account 2: Generales (Papelería, Servicios)
-    await prisma.budgetAccount.upsert({
-        where: { code: 'XP-002' },
-        update: {},
-        create: {
-            code: 'XP-002',
+    await prisma.budgetAccount.create({
+        data: {
+            code: 'BP-002',
             name: 'Gastos Generales y Servicios',
             year: 2026,
-            allocatedAmount: 40000000,
+            allocatedAmount: new Prisma.Decimal(40000000),
             transactions: {
                 create: {
-                    amount: 40000000,
+                    amount: new Prisma.Decimal(40000000),
                     description: 'Asignación Inicial 2026',
                     referenceType: 'INITIAL',
                 }
             }
         }
     });
-    console.log('Budget Config seeded.');
 
-    console.log('Seeding completed. Sample transactional data removed.');
+    console.log('✅ Presupuesto creado\n');
+
+    console.log('✨ Seed completado exitosamente!\n');
+    console.log('📝 Credenciales de acceso:');
+    console.log('   Admin:     admin@example.com / admin123');
+    console.log('   Contador:  contador@example.com / admin123');
+    console.log('   Director:  director@example.com / admin123');
+    console.log('   Usuario:   usuario@example.com / admin123\n');
 }
 
 main()
     .catch((e) => {
-        console.error(e);
+        console.error('❌ Error en seed:', e);
         process.exit(1);
     })
     .finally(async () => {

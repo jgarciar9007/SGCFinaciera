@@ -1,20 +1,41 @@
 import { Router } from 'express';
-import { createInvoice, getInvoices, createPayment, getPayments, uploadInvoiceAttachment } from '../controllers/billingController';
-import { authenticateToken } from '../middleware/auth';
-import { authorize } from '../middleware/authorize';
-import { upload } from '../middleware/upload';
+import { authenticateToken as auth } from '../middleware/auth';
+import {
+    createInvoice,
+    getInvoices,
+    createPayment,
+    getPayments,
+    uploadInvoiceAttachment,
+    payInvoice // NUEVO
+} from '../controllers/billingController';
+import multer from 'multer';
+import path from 'path';
 
 const router = Router();
 
-router.use(authenticateToken);
+// Multer config for invoice uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'invoice-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 
-// Invoices - Only ADMIN and ACCOUNTANT can create
-router.post('/invoices/upload', authorize('ADMIN', 'ACCOUNTANT'), upload.single('file'), uploadInvoiceAttachment);
-router.post('/invoices', authorize('ADMIN', 'ACCOUNTANT'), createInvoice);
-router.get('/invoices', getInvoices);
+const upload = multer({ storage });
 
-// Payments - Only ADMIN and ACCOUNTANT can create payments
-router.post('/payments', authorize('ADMIN', 'ACCOUNTANT'), createPayment);
-router.get('/payments', getPayments);
+// Invoices
+router.post('/invoices', auth, createInvoice);
+router.get('/invoices', auth, getInvoices);
+router.post('/invoices/upload', auth, upload.single('file'), uploadInvoiceAttachment);
+
+// Payments
+router.post('/payments', auth, createPayment);
+router.get('/payments', auth, getPayments);
+
+// NEW: Pay Invoice with Bank Account Selection
+router.post('/invoices/:id/pay', auth, payInvoice);
 
 export default router;

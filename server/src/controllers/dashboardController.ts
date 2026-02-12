@@ -44,7 +44,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         // For accurate per-budget-line execution, we usually match by Name (as per budgetController).
         // Let's do a GL aggregate for Class 6 accounts for correct "Executed" total.
         const expenseAccounts = await prisma.account.findMany({
-            where: { code: { startsWith: '6' } } // Assuming Class 6 is Expenses
+            where: { code: { startsWith: '5' } } // Class 5 is Expenses
         });
         const expenseAccountIds = expenseAccounts.map(a => a.id);
 
@@ -89,11 +89,11 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         const startDate = new Date(currentYear, 0, 1);
         const endDate = new Date(currentYear, 11, 31, 23, 59, 59);
 
-        // Find all expense journal lines (Class 6) for the current year
+        // Find all expense journal lines (Class 5) for the current year
         const expenseLines = await prisma.journalLine.findMany({
             where: {
                 account: {
-                    code: { startsWith: '6' }
+                    code: { startsWith: '5' }
                 },
                 journalEntry: {
                     date: {
@@ -121,9 +121,25 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         }));
         log('[Dashboard] 5. Done. Chart Data prepared.');
 
+        // 6. Procurement KPIs
+        log('[Dashboard] 6. Fetching Procurement KPIs...');
+        const pendingOrders = await prisma.purchaseOrder.count({
+            where: { status: { in: ['PENDING', 'PARTIAL'] } }
+        });
+
+        const totalInvoices = await prisma.invoice.count();
+        const paidInvoices = await prisma.invoice.count({ where: { status: 'PAID' } });
+        const unpaidInvoices = await prisma.invoice.count({ where: { status: 'UNPAID' } });
+
         res.json({
             bankAccounts,
             totalCash,
+            procurement: {
+                pendingOrders,
+                totalInvoices,
+                paidInvoices,
+                unpaidInvoices
+            },
             pendingInvoices: {
                 count: pendingInvoicesCount,
                 amount: pendingInvoicesTotal._sum.totalAmount?.toNumber() || 0

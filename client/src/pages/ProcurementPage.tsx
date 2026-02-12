@@ -23,15 +23,8 @@ export const ProcurementPage = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await api.get('/procurement/purchase-orders');
-                const orders = response.data;
-
-                setStats({
-                    totalOrders: orders.length,
-                    issued: orders.filter((o: any) => o.status === 'ISSUED').length,
-                    received: orders.filter((o: any) => o.status === 'RECEIVED').length,
-                    pending: orders.filter((o: any) => o.status === 'PARTIAL' || o.status === 'ISSUED').length
-                });
+                const response = await api.get('/procurement/stats');
+                setStats(response.data);
             } catch (error) {
                 console.error('Error loading procurement stats:', error);
             } finally {

@@ -52,6 +52,8 @@ export const createPurchaseOrder = async (req: AuthenticatedRequest, res: Respon
 export const getPurchaseOrders = async (req: AuthenticatedRequest, res: Response) => {
     try {
         console.log(`[DEBUG PO] Fetching Purchase Orders... UserID: ${req.user?.userId}`);
+        const { status } = req.query;
+
         const pos = await prisma.purchaseOrder.findMany({
             include: {
                 expenseRequest: {
@@ -63,7 +65,22 @@ export const getPurchaseOrders = async (req: AuthenticatedRequest, res: Response
             orderBy: { date: 'desc' }
         });
 
-        res.json(pos);
+        // Filter if requested
+        let result = pos;
+        if (status === 'pending_invoice') {
+            result = pos.filter(po => {
+                // Ignore CLOSED or REJECTED
+                if (po.status === 'CLOSED') return false;
+
+                // Calculate total invoiced
+                const invoicedAmount = po.invoices.reduce((sum, inv) => sum + Number(inv.totalAmount), 0);
+
+                // Allow if invoiced < total PO amount (with small toggle for float precision)
+                return invoicedAmount < Number(po.totalAmount) - 1;
+            });
+        }
+
+        res.json(result);
     } catch (error) {
         console.error('[DEBUG PO Error]:', error);
         res.status(500).json({ error: 'Failed to fetch Purchase Orders' });
@@ -154,5 +171,27 @@ export const registerReception = async (req: AuthenticatedRequest, res: Response
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to register reception' });
+    }
+};
+
+export const getProcurementStats = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const totalOrders = await prisma.purchaseOrder.count();
+        const issued = await prisma.purchaseOrder.count({ where: { status: 'ISSUED' } });
+        const received = await prisma.purchaseOrder.count({ where: { status: 'RECEIVED' } });
+        const partial = await prisma.purchaseOrder.count({ where: { status: 'PARTIAL' } });
+        const closed = await prisma.purchaseOrder.count({ where: { status: 'CLOSED' } });
+
+        res.json({
+            totalOrders,
+            issued,
+            received,
+            partial,
+            pending: partial + issued,
+            closed
+        });
+    } catch (error) {
+        console.error('Error fetching procurement stats:', error);
+        res.status(500).json({ error: 'Failed to fetch procurement stats' });
     }
 };

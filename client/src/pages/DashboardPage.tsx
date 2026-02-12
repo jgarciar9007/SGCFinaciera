@@ -16,6 +16,12 @@ import { format } from 'date-fns';
 interface DashboardData {
     bankAccounts: any[];
     totalCash: number;
+    procurement: {
+        pendingOrders: number;
+        totalInvoices: number;
+        paidInvoices: number;
+        unpaidInvoices: number;
+    };
     pendingInvoices: { count: number; amount: number };
     budget: {
         allocated: number;
@@ -64,9 +70,8 @@ export const DashboardPage = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {/* ... Header Stats ... */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* ... StatCards ... */}
+            {/* Header Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Tesorería"
                     value={formatCurrency(data.totalCash)}
@@ -88,6 +93,47 @@ export const DashboardPage = () => {
                     subValue={`Total: ${formatCurrency(data.pendingInvoices.amount)}`}
                     color="bg-red-50 border-red-100"
                 />
+                <StatCard
+                    title="Órdenes de Compra"
+                    value={`${data.procurement?.pendingOrders || 0}`}
+                    icon={<FileText className="text-purple-600 w-6 h-6" />}
+                    subValue={`Pendientes/Parciales`}
+                    color="bg-purple-50 border-purple-100"
+                />
+            </div>
+
+            {/* Procurement KPIs */}
+            <div>
+                <h3 className="text-lg font-bold mb-3 text-gray-700">Compras y Facturación</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500">Total Facturas</p>
+                                <p className="text-2xl font-bold text-gray-800">{data.procurement?.totalInvoices || 0}</p>
+                            </div>
+                            <FileText className="w-8 h-8 text-blue-500" />
+                        </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500">Facturas Pagadas</p>
+                                <p className="text-2xl font-bold text-green-600">{data.procurement?.paidInvoices || 0}</p>
+                            </div>
+                            <CheckCircle className="w-8 h-8 text-green-500" />
+                        </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500">Facturas Sin Pagar</p>
+                                <p className="text-2xl font-bold text-red-600">{data.procurement?.unpaidInvoices || 0}</p>
+                            </div>
+                            <AlertCircle className="w-8 h-8 text-red-500" />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Bank Accounts Row */}
@@ -114,42 +160,46 @@ export const DashboardPage = () => {
             </div>
 
             {/* ... Charts Row ... */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[350px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* ... existing charts ... */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border">
                     <h3 className="font-bold text-gray-700 mb-4">Ejecución Mensual</h3>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={data.chartData}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 12 }} tickFormatter={(val) => `${val / 1000}k`} />
-                            <Tooltip formatter={(val: any) => formatCurrency(val)} />
-                            <Bar dataKey="executed" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <div className="h-[280px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data.chartData}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                <YAxis tick={{ fontSize: 12 }} tickFormatter={(val) => `${val / 1000}k`} />
+                                <Tooltip formatter={(val: any) => formatCurrency(val)} />
+                                <Bar dataKey="executed" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border">
                     <h3 className="font-bold text-gray-700 mb-4">Distribución Anual</h3>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={pieData}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={60}
-                                outerRadius={80}
-                                paddingAngle={5}
-                                dataKey="value"
-                            >
-                                {pieData.map((_, index) => (
-                                    <Cell key={`cell-${index}`} fill={['#3b82f6', '#fbbf24', '#e5e7eb'][index]} />
-                                ))}
-                            </Pie>
-                            <Tooltip formatter={(val: any) => formatCurrency(val)} />
-                            <Legend verticalAlign="bottom" height={36} />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    <div className="h-[280px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={pieData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {pieData.map((_, index) => (
+                                        <Cell key={`cell-${index}`} fill={['#3b82f6', '#fbbf24', '#e5e7eb'][index]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip formatter={(val: any) => formatCurrency(val)} />
+                                <Legend verticalAlign="bottom" height={36} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
 

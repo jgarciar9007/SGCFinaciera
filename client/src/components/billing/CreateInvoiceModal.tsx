@@ -26,7 +26,9 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
     useEffect(() => {
         if (isOpen) {
             // Note: Ideally query endpoint should return remaining balance or we fetch specific PO details on selection
-            api.get('/procurement').then(res => {
+            api.get('/procurement', {
+                params: { status: 'pending_invoice' }
+            }).then(res => {
                 setPurchaseOrders(res.data);
             });
         }

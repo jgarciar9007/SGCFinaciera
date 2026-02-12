@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../utils/prisma';
+import { accountingService } from '../services/accountingService';
 
 interface AuthenticatedRequest extends Request {
     user?: {
@@ -11,7 +12,7 @@ interface AuthenticatedRequest extends Request {
 // Invoices
 export const createInvoice = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { purchaseOrderId, number, supplierName, date, dueDate, totalAmount, attachmentPath } = req.body;
+        const { purchaseOrderId, number, supplierName, supplierId, date, dueDate, totalAmount, description, attachmentPath } = req.body;
 
         // Check duplication
         const existing = await prisma.invoice.findFirst({ where: { number, supplierName } });
@@ -50,64 +51,23 @@ export const createInvoice = async (req: AuthenticatedRequest, res: Response) =>
                 purchaseOrderId: poIdInt,
                 number,
                 supplierName,
+                // supplierId: supplierId ? parseInt(supplierId) : undefined, // TODO: Add to schema
                 date: new Date(date),
                 dueDate: dueDate ? new Date(dueDate) : undefined,
                 totalAmount: parseFloat(totalAmount),
+                // description, // TODO: Add to schema
                 status: 'UNPAID',
-                attachmentPath // Save PDF path
+                attachmentPath
             }
         });
 
-        // --- ACCOUNTING AUTOMATION ---
-        // 1. Find AP Account (Pasivo - Proveedores)
-        const apAccount = await prisma.account.findFirst({ where: { code: '2101' } }); // Example code for Proveedores
-        // 2. Find Expense/Asset Account. 
-        // If linked to PO -> ExpenseRequest -> BudgetAccount -> Account.
-        // If not, use a default suspense account or generic expense.
-        let debitAccountId = 0;
-
-        if (poIdInt) {
-            const po = await prisma.purchaseOrder.findUnique({
-                where: { id: poIdInt },
-                include: { expenseRequest: { include: { budgetAccount: true } } }
-            });
-            if (po?.expenseRequest?.budgetAccount?.accountId) {
-                debitAccountId = po.expenseRequest.budgetAccount.accountId;
-            }
-        }
-
-        // Fallback if no account found: use 'Gastos Diversos' or fail gracefully? 
-        // For now, let's try to find a generic expense account if 0.
-        if (debitAccountId === 0) {
-            const expenseAccount = await prisma.account.findFirst({ where: { code: '5101' } }); // Example code for Gastos
-            if (expenseAccount) debitAccountId = expenseAccount.id;
-        }
-
-        if (apAccount && debitAccountId !== 0) {
-            await prisma.journalEntry.create({
-                data: {
-                    date: new Date(date), // Accounting date = Invoice date
-                    description: `Provisión Factura #${number} - ${supplierName}`,
-                    reference: `INV-${invoice.id}`,
-                    status: 'POSTED',
-                    lines: {
-                        create: [
-                            {
-                                accountId: debitAccountId,
-                                debit: parseFloat(totalAmount),
-                                credit: 0,
-                                description: `Gasto/Activo Factura #${number}`
-                            },
-                            {
-                                accountId: apAccount.id,
-                                debit: 0,
-                                credit: parseFloat(totalAmount),
-                                description: `Cuentas por Pagar - ${supplierName}`
-                            }
-                        ]
-                    }
-                }
-            });
+        // --- INTEGRACIÓN CONTABLE AUTOMÁTICA ---
+        try {
+            await accountingService.recordInvoiceAccrual(invoice, '5195'); // Usar cuenta de gastos diversos
+            console.log(`✅ Asiento contable creado para factura ${invoice.number}`);
+        } catch (accountingError) {
+            console.error('Error al crear asiento contable:', accountingError);
+            // No fallar la creación de la factura si falla la contabilidad
         }
         // -----------------------------
 
@@ -270,7 +230,14 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
 
 export const getPayments = async (req: AuthenticatedRequest, res: Response) => {
     try {
+        const { bankAccountId, status } = req.query;
+        const where: any = {};
+
+        if (bankAccountId) where.bankAccountId = parseInt(bankAccountId as string);
+        if (status) where.status = status;
+
         const payments = await prisma.payment.findMany({
+            where,
             include: {
                 invoice: true
             },
@@ -278,7 +245,7 @@ export const getPayments = async (req: AuthenticatedRequest, res: Response) => {
         });
         res.json(payments);
     } catch (error) {
-
+        console.error(error);
         res.status(500).json({ error: 'Failed to fetch payments' });
     }
 };
@@ -294,5 +261,48 @@ export const uploadInvoiceAttachment = async (req: any, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to upload file' });
+    }
+};
+
+// NEW: Pay Invoice with Bank Account Selection
+export const payInvoice = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const invoiceId = parseInt(req.params.id);
+        const { bankAccountId, paymentDate, reference, notes } = req.body;
+
+        if (!bankAccountId) {
+            return res.status(400).json({ error: 'Bank account is required' });
+        }
+
+        // Get invoice
+        const invoice = await prisma.invoice.findUnique({
+            where: { id: invoiceId }
+        });
+
+        if (!invoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        if (invoice.status === 'PAID') {
+            return res.status(400).json({ error: 'Invoice is already paid' });
+        }
+
+        // Process payment using accounting service
+        const result = await accountingService.recordInvoicePayment(
+            invoice,
+            parseInt(bankAccountId),
+            reference,
+            paymentDate ? new Date(paymentDate) : undefined
+        );
+
+        res.json({
+            success: true,
+            message: `Factura ${invoice.number} pagada exitosamente`,
+            newBankBalance: result.newBalance,
+            invoice: result.invoice
+        });
+    } catch (error: any) {
+        console.error('Error al pagar factura:', error);
+        res.status(500).json({ error: error.message || 'Failed to pay invoice' });
     }
 };

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../utils/prisma';
+import { accountingService } from '../services/accountingService';
 
 export const getBankAccounts = async (req: Request, res: Response) => {
     try {
@@ -118,5 +119,16 @@ export const deleteBankAccount = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete bank account' });
+    }
+};
+
+export const conciliatePayment = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await accountingService.reconcilePayment(Number(id));
+        res.json(result);
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ error: error.message || 'Failed to reconcile payment' });
     }
 };
