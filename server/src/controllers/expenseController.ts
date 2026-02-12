@@ -138,7 +138,8 @@ export const updateExpenseStatus = async (req: AuthenticatedRequest, res: Respon
                 where: { id: parseInt(id) },
                 data: {
                     status,
-                    approverId: status === 'APPROVED' || status === 'REJECTED' ? approverId : undefined
+                    approverId: status === 'APPROVED' || status === 'REJECTED' ? approverId : undefined,
+                    approvalDocument: req.body.approvalDocument
                 },
                 include: { quotations: true }
             });
@@ -221,5 +222,18 @@ export const uploadQuotationAttachment = async (req: Request, res: Response) => 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to upload quotation attachment' });
+    }
+};
+
+export const uploadApprovalDoc = async (req: Request, res: Response) => {
+    try {
+        const file = req.file;
+        if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+        // Just return the path, we will save it to the expense record during status update
+        res.json({ filePath: `/uploads/${file.filename}` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to upload approval document' });
     }
 };

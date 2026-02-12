@@ -89,6 +89,15 @@ export class AccountingService {
     async recordInvoiceAccrual(invoice: any, expenseAccountCode: string = '5195') {
         const amount = Number(invoice.totalAmount);
 
+        // Resolve ThirdParty ID
+        let thirdPartyId = invoice.supplierId ? Number(invoice.supplierId) : undefined;
+        if (!thirdPartyId && invoice.supplierName) {
+            const tp = await prisma.thirdParty.findFirst({
+                where: { name: invoice.supplierName }
+            });
+            if (tp) thirdPartyId = tp.id;
+        }
+
         await this.createJournalEntry({
             date: new Date(invoice.date),
             description: `Factura ${invoice.number} - ${invoice.supplierName}`,
@@ -98,13 +107,13 @@ export class AccountingService {
                     accountCode: expenseAccountCode, // Gasto
                     debit: amount,
                     description: invoice.description || 'Gasto por factura',
-                    thirdPartyId: invoice.supplierId
+                    thirdPartyId: thirdPartyId
                 },
                 {
                     accountCode: '2335', // Cuentas por Pagar
                     credit: amount,
                     description: 'Cuenta por pagar',
-                    thirdPartyId: invoice.supplierId
+                    thirdPartyId: thirdPartyId
                 }
             ]
         });
@@ -163,6 +172,15 @@ export class AccountingService {
                 );
             }
 
+            // Resolve ThirdParty ID
+            let thirdPartyId = invoice.supplierId ? Number(invoice.supplierId) : undefined;
+            if (!thirdPartyId && invoice.supplierName) {
+                const tp = await tx.thirdParty.findFirst({
+                    where: { name: invoice.supplierName }
+                });
+                if (tp) thirdPartyId = tp.id;
+            }
+
             // Crear asiento contable
             await this.createJournalEntry({
                 date: paymentDate || new Date(),
@@ -173,7 +191,7 @@ export class AccountingService {
                         accountCode: '2335', // Cuentas por Pagar
                         debit: amount,
                         description: 'Pago de cuenta por pagar',
-                        thirdPartyId: invoice.supplierId
+                        thirdPartyId: thirdPartyId
                     },
                     {
                         accountCode: '1110', // Bancos

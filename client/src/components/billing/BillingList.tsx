@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Check, AlertCircle, Plus, CreditCard, FileText 
 import { cn } from '../../lib/utils';
 import { CreateInvoiceModal } from './CreateInvoiceModal';
 import { CreatePaymentModal } from './CreatePaymentModal';
+import { translateStatus } from '../../utils/translations';
 
 export const BillingList = () => {
     const [activeTab, setActiveTab] = useState<'invoices' | 'payments'>('invoices');
@@ -120,7 +121,7 @@ export const BillingList = () => {
                                         <td className="p-4 align-middle text-right font-bold">${inv.totalAmount.toLocaleString()}</td>
                                         <td className="p-4 align-middle">
                                             <span className={cn("px-2 py-1 rounded-full text-xs font-semibold", getStatusColor(inv.status))}>
-                                                {inv.status}
+                                                {translateStatus(inv.status)}
                                             </span>
                                         </td>
                                     </tr>

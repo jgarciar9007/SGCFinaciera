@@ -53,6 +53,7 @@ export interface ExpenseRequest {
     items: ExpenseItem[];
     attachments: ExpenseAttachment[];
     quotations?: ExpenseQuotation[];
+    approvalDocument?: string;
 }
 
 export interface Reception {

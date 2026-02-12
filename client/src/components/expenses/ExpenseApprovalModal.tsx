@@ -14,6 +14,7 @@ interface ExpenseApprovalModalProps {
 
 export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: ExpenseApprovalModalProps) => {
     const [selectedQuotationId, setSelectedQuotationId] = useState<number | null>(null);
+    const [approvalFile, setApprovalFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
     if (!expense) return null;
@@ -21,21 +22,44 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
     const handleAction = async (status: 'APPROVED' | 'REJECTED') => {
         setLoading(true);
         try {
+            let approvalDocumentPath = undefined;
+
+            if (status === 'APPROVED') {
+                if (!approvalFile) {
+                    alert('Debe adjuntar el documento de aprobación.');
+                    setLoading(false);
+                    return;
+                }
+
+                // Upload file
+                const formData = new FormData();
+                formData.append('file', approvalFile);
+
+                const uploadRes = await api.post('/expenses/approval-document', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                approvalDocumentPath = uploadRes.data.filePath;
+            }
+
             await api.patch(`/expenses/${expense.id}/status`, {
                 status,
-                selectedQuotationId: status === 'APPROVED' ? selectedQuotationId : undefined
+                selectedQuotationId: status === 'APPROVED' ? selectedQuotationId : undefined,
+                approvalDocument: approvalDocumentPath
             });
             onSuccess();
             onClose();
+            setApprovalFile(null);
+            setSelectedQuotationId(null);
         } catch (error) {
             console.error('Failed to update status', error);
+            alert('Error al actualizar el estado');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Modal title={`Aprobar Solicitud #${expense.id}`} isOpen={isOpen} onClose={onClose} className="max-w-3xl">
+        <Modal title={`Gestionar Solicitud #${expense.id}`} isOpen={isOpen} onClose={onClose} className="max-w-3xl">
             <div className="space-y-6">
                 <div>
                     <h3 className="text-lg font-bold">{expense.description}</h3>
@@ -73,23 +97,34 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
                     </div>
                 )}
 
+                <div className="space-y-2 border-t pt-4">
+                    <label className="text-sm font-medium">Documento de Aprobación (Requerido para Aprobar)</label>
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={(e) => setApprovalFile(e.target.files?.[0] || null)}
+                        className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                    />
+                    <p className="text-xs text-muted-foreground">Adjunte el acta, correo o soporte de la aprobación.</p>
+                </div>
+
                 <div className="flex justify-end gap-3 pt-4 border-t">
                     <button
                         onClick={() => handleAction('REJECTED')}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
                         disabled={loading}
                     >
-                        <X className="w-4 h-4" /> Rechazar
+                        <X className="w-4 h-4" /> Rechazar Solicitud
                     </button>
                     <button
                         onClick={() => handleAction('APPROVED')}
-                        disabled={loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId)}
+                        disabled={loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId) || !approvalFile}
                         className={cn(
                             "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md",
-                            (loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId)) && "opacity-50 cursor-not-allowed"
+                            (loading || ((expense.quotations?.length || 0) > 0 && !selectedQuotationId) || !approvalFile) && "opacity-50 cursor-not-allowed"
                         )}
                     >
-                        <Check className="w-4 h-4" /> Aprobar y Generar Orden
+                        <Check className="w-4 h-4" /> Confirmar Aprobación
                     </button>
                 </div>
             </div>

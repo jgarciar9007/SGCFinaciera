@@ -18,6 +18,11 @@ router.patch('/:id/status', authorize('ADMIN', 'DIRECTOR', 'ACCOUNTANT'), update
 router.delete('/:id', authorize('ADMIN'), deleteExpenseRequest);
 
 router.post('/:id/attachments', upload.single('file'), uploadAttachment);
+router.post('/approval-document', upload.single('file'), (req, res, next) => {
+    // Wrapper to match controller signature if needed, or just import
+    const { uploadApprovalDoc } = require('../controllers/expenseController');
+    uploadApprovalDoc(req, res);
+});
 router.post('/quotations/:id/attachment', upload.single('file'), uploadQuotationAttachment);
 
 export default router;

@@ -5,6 +5,7 @@ import { CheckCircle, Truck, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { CreatePOModal } from './CreatePOModal';
 import { Modal } from '../ui/Modal';
+import { translateStatus, getStatusColor } from '../../utils/translations';
 
 export const ProcurementList = () => {
     const [orders, setOrders] = useState<PurchaseOrder[]>([]);
@@ -54,13 +55,7 @@ export const ProcurementList = () => {
         setReceptionModalOpen(true);
     };
 
-    const translateStatus = (status: string) => {
-        switch (status) {
-            case 'ISSUED': return 'EMITIDA';
-            case 'RECEIVED': return 'RECIBIDA';
-            default: return status;
-        }
-    };
+
 
     if (loading) return <div>Cargando órdenes...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -103,10 +98,7 @@ export const ProcurementList = () => {
                                     <td className="p-4 align-middle text-muted-foreground">Sol. #{po.expenseRequestId}</td>
                                     <td className="p-4 align-middle font-bold">{Number(po.totalAmount).toLocaleString('fr-FR')} FCFA</td>
                                     <td className="p-4 align-middle">
-                                        <span className={cn(
-                                            "px-2 py-1 rounded-full text-xs font-semibold",
-                                            po.status === 'RECEIVED' ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                                        )}>
+                                        <span className={cn("px-2 py-1 rounded-full text-xs font-semibold", getStatusColor(po.status))}>
                                             {translateStatus(po.status)}
                                         </span>
                                     </td>

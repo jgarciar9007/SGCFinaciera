@@ -37,33 +37,39 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 
         let totalAllocated = 0;
         let totalCommitted = 0;
-        let totalExecuted = 0; // Using simplified calculation if possible, else we need GL check
+        let totalExecuted = 0;
 
-        // For Total Executed, it's faster to verify via JournalLines directly on expense accounts (Class 6)
-        // assuming standard accounting. 
-        // For accurate per-budget-line execution, we usually match by Name (as per budgetController).
-        // Let's do a GL aggregate for Class 6 accounts for correct "Executed" total.
-        const expenseAccounts = await prisma.account.findMany({
-            where: { code: { startsWith: '5' } } // Class 5 is Expenses
+        // 1. Calculate Total Executed from BudgetTransactions (Reconciled Payments)
+        // We sum all transactions with referenceType = 'EXECUTION' (or just negative amounts that are executions)
+        // referencing our new logic: reconcilePayment -> moveBudgetToExecuted -> BudgetTransaction
+        const executionTransactions = await prisma.budgetTransaction.aggregate({
+            _sum: { amount: true },
+            where: {
+                budgetAccount: { year: currentYear },
+                referenceType: 'EXECUTION' // This ensures we only count reconciled payments
+            }
         });
-        const expenseAccountIds = expenseAccounts.map(a => a.id);
+        // Amount is negative in DB for execution, so we invert it for display
+        totalExecuted = Math.abs(executionTransactions._sum.amount?.toNumber() || 0);
 
-        if (expenseAccountIds.length > 0) {
-            const executionAgg = await prisma.journalLine.aggregate({
-                _sum: { debit: true },
-                where: { accountId: { in: expenseAccountIds } }
-            });
-            totalExecuted = executionAgg._sum.debit?.toNumber() || 0;
-        }
+        // 2. Calculate Total Committed (Approved POs that are NOT yet executed/reconciled)
+        // We sum all Approved/Partial/Received POs
+        // Logic: Committed = (Sum of All Approved POs) - TotalExecuted
+        // This assumes TotalExecuted comes FROM those POs.
 
+        // Let's sum all POs linked to these budgets
+        let totalPOAmount = 0;
         budgetAccounts.forEach(acc => {
             totalAllocated += acc.allocatedAmount.toNumber();
             acc.expenseRequests.forEach(req => {
-                if (req.purchaseOrder && req.purchaseOrder.status !== 'REJECTED') {
-                    totalCommitted += req.purchaseOrder.totalAmount.toNumber();
+                if (req.purchaseOrder && ['ISSUED', 'PARTIAL', 'RECEIVED', 'CLOSED'].includes(req.purchaseOrder.status)) {
+                    totalPOAmount += req.purchaseOrder.totalAmount.toNumber();
                 }
             });
         });
+
+        // Committed is what remains to be executed
+        totalCommitted = Math.max(0, totalPOAmount - totalExecuted);
 
         const budgetExecutionPercent = totalAllocated > 0 ? (totalExecuted / totalAllocated) * 100 : 0;
 

@@ -11,6 +11,7 @@ import {
     Building2, ArrowRight
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { translateStatus } from '../utils/translations';
 
 // Types
 interface DashboardData {
@@ -246,7 +247,7 @@ export const DashboardPage = () => {
                                         "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase",
                                         inv.status === 'PAID' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                     )}>
-                                        {inv.status}
+                                        {translateStatus(inv.status)}
                                     </span>
                                 </div>
                                 <div className="text-right">

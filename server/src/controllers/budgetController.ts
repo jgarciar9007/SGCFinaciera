@@ -18,51 +18,29 @@ export const getBudgetAccounts = async (req: Request, res: Response) => {
 
         // Link Budget Items to GL Accounts by NAME.
         const accountsWithExecution = await Promise.all(accounts.map(async (acc) => {
-            // 1. Calculate Executed (Devengado) from GL
-            const glAccounts = await prisma.account.findMany({
-                where: { name: acc.name }
-            });
-            const glAccountIds = glAccounts.map(g => g.id);
-            let executed = 0;
-            if (glAccountIds.length > 0) {
-                const aggregations = await prisma.journalLine.aggregate({
-                    where: {
-                        accountId: { in: glAccountIds },
-                        debit: { gt: 0 }
-                    },
-                    _sum: { debit: true }
-                });
-                executed = aggregations._sum.debit?.toNumber() || 0;
-            }
+            // 1. Calculate Executed (Devengado) from BudgetTransactions (Reconciled Payments)
+            const executedTransactions = acc.transactions.filter(t => t.referenceType === 'EXECUTION');
+            const executed = Math.abs(executedTransactions.reduce((sum, t) => sum + t.amount.toNumber(), 0));
 
-            // 2. Calculate Committed (Comprometido) from Approved Purchase Orders linked via ExpenseRequest
-            // Sum 'totalAmount' of PurchaseOrders where expenseRequest is linked to this budgetAccount
-            // Note: We sum ALL linked POs. Logic can be refined to exclude Paid ones if 'Committed' means 'Outstanding'.
-            // For now, per user request "sales comprometido son las compras aprobadas", we sum all approved POs.
-            let committed = 0;
+            // 2. Calculate Total Committed PO Amount (Approved/Issued/Partial/Received/Closed)
+            let totalPOAmount = 0;
             acc.expenseRequests.forEach(req => {
-                if (req.purchaseOrder && req.purchaseOrder.status !== 'REJECTED') {
-                    committed += req.purchaseOrder.totalAmount.toNumber();
+                if (req.purchaseOrder && ['ISSUED', 'PARTIAL', 'RECEIVED', 'CLOSED'].includes(req.purchaseOrder.status)) {
+                    totalPOAmount += req.purchaseOrder.totalAmount.toNumber();
                 }
             });
 
-            // 3. Current Balance (Saldo Actual) = Asignado - Devengado
-            const currentBalance = acc.allocatedAmount.toNumber() - executed;
+            // 3. Committed = Total PO Amount - Executed
+            // (Committed serves as the "Pending Execution" amount)
+            const committed = Math.max(0, totalPOAmount - executed);
 
-            // 4. Alert Logic: If Committed > Current Balance
-            const isAlert = committed > currentBalance;
+            // 4. Current Balance (Available) = Asignado - Total Usage
+            // Total Usage = Committed + Executed
+            const totalUsage = committed + executed;
+            const currentBalance = acc.allocatedAmount.toNumber() - totalUsage;
 
-            // 5. Final/Available Balance (Saldo Final/Disponible)
-            // Ideally: Allocated - MAX(Committed, Executed)? Or Allocated - Executed - (Committed - ExecutedPO)?
-            // For simple display as requested:
-            // "Saldo Final" usually means Available to Spend.
-            // If we assume Committed covers the Executed part:
-            // Available = Allocated - (Greatest of Committed or Executed)
-            // But if they are decoupled:
-            // Let's return simple Available = currentBalance (Asignado - Devengado) for now as 'Saldo Final' column usually tracks cash/gl availability.
-            // Or better: Available = Allocated - Committed (if Committed is the leading indicator).
-            // Let's stick to: Available = Allocated - Executed (Standard Budget Availability based on actuals),
-            // but the Alert warns if we are over-committed.
+            // 5. Alert if Usage > Allocated
+            const isAlert = totalUsage > acc.allocatedAmount.toNumber();
 
             const available = currentBalance;
 

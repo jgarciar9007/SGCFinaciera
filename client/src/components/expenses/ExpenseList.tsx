@@ -5,6 +5,7 @@ import { Plus, Search, FileText, Paperclip, ChevronDown, ChevronUp, Download, Ch
 import { cn } from '../../lib/utils';
 import { CreateExpenseModal } from './CreateExpenseModal';
 import { ExpenseApprovalModal } from './ExpenseApprovalModal';
+import { translateStatus } from '../../utils/translations';
 
 export const ExpenseList = () => {
     const [expenses, setExpenses] = useState<ExpenseRequest[]>([]);
@@ -64,15 +65,7 @@ export const ExpenseList = () => {
         setApprovalModal({ isOpen: true, expense });
     };
 
-    const translateStatus = (status: string) => {
-        switch (status) {
-            case 'APPROVED': return 'APROBADO';
-            case 'REJECTED': return 'RECHAZADO';
-            case 'SUBMITTED': return 'SOLICITADO';
-            case 'DRAFT': return 'BORRADOR';
-            default: return status;
-        }
-    };
+
 
     if (loading) return <div>Cargando solicitudes...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -220,6 +213,23 @@ export const ExpenseList = () => {
                                                                     </a >
                                                                 ))}
                                                             </div>
+                                                        </div >
+                                                    )}
+
+                                                    {expense.approvalDocument && (
+                                                        <div>
+                                                            <h4 className="font-semibold text-sm mb-2 text-primary flex items-center gap-2">
+                                                                <CheckCircle className="w-4 h-4" /> Documento de Aprobación
+                                                            </h4>
+                                                            <a
+                                                                href={`http://localhost:3000${expense.approvalDocument}`}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="inline-flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 transition-colors text-sm text-green-700 hover:underline"
+                                                            >
+                                                                <FileText className="w-4 h-4" />
+                                                                Ver Soporte de Aprobación
+                                                            </a >
                                                         </div >
                                                     )}
                                                 </div >

@@ -49,7 +49,7 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
     const fetchSuppliers = async () => {
         try {
             const res = await api.get('/settings/third-parties'); // Assuming this endpoint returns all
-            const provs = res.data.filter((tp: ThirdParty) => tp.type === 'PROV');
+            const provs = res.data.filter((tp: ThirdParty) => tp.type === 'SUPPLIER');
             setSuppliers(provs);
         } catch (err) {
             console.error(err);
@@ -59,7 +59,7 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
     const handleCreateSupplier = async (name: string, index: number) => {
         try {
             const res = await api.post('/settings/third-parties', {
-                type: 'PROV',
+                type: 'SUPPLIER',
                 name: name,
                 identification: 'PENDIENTE', // Placeholder
                 email: '',
@@ -295,28 +295,47 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
                             <div key={index} className="flex gap-2 items-start bg-gray-50 p-2 rounded-md border border-gray-200">
                                 <div className="space-y-2 flex-1">
                                     <div className="relative">
-                                        <input
-                                            list={`suppliers-list-${index}`}
-                                            value={q.supplierName}
-                                            onChange={(e) => updateQuotation(index, 'supplierName', e.target.value)}
-                                            placeholder="Buscar o Escribir Proveedor..."
-                                            className="w-full border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 border-gray-300"
-                                            required={quotations.length > 0 && index === 0}
-                                        />
-                                        <datalist id={`suppliers-list-${index}`}>
-                                            {suppliers.map(s => (
-                                                <option key={s.id} value={s.name} />
-                                            ))}
-                                        </datalist>
-
-                                        {q.supplierName && !suppliers.find(s => s.name.toLowerCase() === q.supplierName.toLowerCase()) && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCreateSupplier(q.supplierName, index)}
-                                                className="absolute right-2 top-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-2 py-0.5 rounded"
+                                        {(q.supplierName === '__NEW__' || (q.supplierName !== '' && !suppliers.find(s => s.name === q.supplierName))) ? (
+                                            <div className="flex gap-1">
+                                                <input
+                                                    value={q.supplierName === '__NEW__' ? '' : q.supplierName}
+                                                    onChange={(e) => updateQuotation(index, 'supplierName', e.target.value)}
+                                                    placeholder="Escribir nombre del nuevo proveedor..."
+                                                    className={cn(inputClasses, "flex-1")}
+                                                    autoFocus
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCreateSupplier(q.supplierName, index)}
+                                                    disabled={!q.supplierName || q.supplierName === '__NEW__'}
+                                                    className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:opacity-50"
+                                                    title="Guardar nuevo proveedor"
+                                                >
+                                                    Guardar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateQuotation(index, 'supplierName', '')}
+                                                    className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300"
+                                                    title="Cancelar"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <select
+                                                value={q.supplierName}
+                                                onChange={(e) => updateQuotation(index, 'supplierName', e.target.value)}
+                                                className={inputClasses}
                                             >
-                                                + Crear
-                                            </button>
+                                                <option value="">-- Seleccionar Proveedor --</option>
+                                                {suppliers.map(s => (
+                                                    <option key={s.id} value={s.name}>{s.name}</option>
+                                                ))}
+                                                <option value="__NEW__" className="font-bold text-blue-600 bg-blue-50">
+                                                    + Crear Nuevo Proveedor
+                                                </option>
+                                            </select>
                                         )}
                                     </div>
                                     <div className="flex gap-2">
