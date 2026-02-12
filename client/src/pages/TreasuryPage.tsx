@@ -6,6 +6,8 @@ import { CreateAccountModal } from '../components/treasury/CreateAccountModal';
 import { CreateTransactionModal } from '../components/treasury/CreateTransactionModal';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useConfirm } from '../context/ConfirmContext';
+import { showToast } from '../lib/toast';
 
 interface Transaction {
     id: number;
@@ -75,20 +77,27 @@ export const TreasuryPage = () => {
 
     const handleDeleteAccount = async (id: number, e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card selection
-        if (!confirm('¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.')) return;
+
+        if (!await confirm({
+            title: 'Eliminar Cuenta',
+            message: '¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.',
+            confirmText: 'Eliminar',
+            type: 'danger'
+        })) return;
 
         try {
             const res = await api.delete(`/treasury/accounts/${id}`);
-            alert(res.data.message);
+            showToast.success(res.data.message);
             fetchAccounts();
             if (selectedAccount?.id === id) setSelectedAccount(null);
         } catch (error) {
             console.error(error);
-            alert('Error al eliminar la cuenta');
+            showToast.error('Error al eliminar la cuenta');
         }
     };
 
     const [pendingPayments, setPendingPayments] = useState<any[]>([]);
+    const { confirm } = useConfirm();
 
     useEffect(() => {
         if (selectedAccount) {
@@ -108,17 +117,23 @@ export const TreasuryPage = () => {
     };
 
     const handleConciliate = async (paymentId: number) => {
-        if (!confirm('¿Confirmar conciliación de este pago? Esto afectará la ejecución presupuestal.')) return;
+        if (!await confirm({
+            title: 'Conciliar Pago',
+            message: '¿Confirmar conciliación de este pago? Esto afectará la ejecución presupuestal.',
+            confirmText: 'Conciliar',
+            type: 'warning'
+        })) return;
+
         try {
             await api.post(`/treasury/payments/${paymentId}/conciliate`);
-            alert('Pago conciliado correctamente');
+            showToast.success('Pago conciliado correctamente');
             if (selectedAccount) {
                 fetchPendingPayments(selectedAccount.id);
                 fetchAccounts(); // Refresh to see any updates
             }
         } catch (error: any) {
             console.error(error);
-            alert(error.response?.data?.error || 'Error al conciliar pago');
+            showToast.error(error.response?.data?.error || 'Error al conciliar pago');
         }
     };
 

@@ -3,6 +3,7 @@ import api from '../../api/client';
 import type { PurchaseOrder } from '../../types';
 import { CheckCircle, Truck, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { showToast } from '../../lib/toast';
 import { CreatePOModal } from './CreatePOModal';
 import { Modal } from '../ui/Modal';
 import { translateStatus, getStatusColor } from '../../utils/translations';
@@ -28,7 +29,7 @@ export const ProcurementList = () => {
             console.error(err);
             const status = err.response?.status;
             const msg = err.response?.data?.error || err.message;
-            setError(`Error al cargar órdenes de compra: ${status} - ${msg}`);
+            setError(`Error al cargar órdenes de compra: ${status} - ${msg} `);
         } finally {
             setLoading(false);
         }
@@ -41,12 +42,17 @@ export const ProcurementList = () => {
     const handleReception = async () => {
         if (!selectedOrderId) return;
         try {
+            // Assuming selectedPo.id refers to selectedOrderId based on the context of the original code
+            // and the instruction's partial code snippet.
+            // The instruction's snippet also changes the endpoint and removes the note payload.
             await api.post(`/procurement/${selectedOrderId}/reception`, { note: receptionNote });
+            showToast.success('Recepción registrada correctamente');
+            fetchOrders();
             setReceptionModalOpen(false);
             setReceptionNote('');
-            fetchOrders();
-        } catch (err) {
-            alert('Error al registrar la recepción');
+        } catch (error) {
+            console.error(error);
+            showToast.error('Error al registrar la recepción');
         }
     };
 

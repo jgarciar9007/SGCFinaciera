@@ -29,6 +29,13 @@ export const createInvoice = async (req: AuthenticatedRequest, res: Response) =>
 
             if (!po) return res.status(404).json({ error: 'Purchase Order not found' });
 
+            // ENFORCE RULE: PO Must be RECEIVED or PARTIAL to invoice
+            if (po.status !== 'RECEIVED' && po.status !== 'PARTIAL' && po.status !== 'CLOSED') {
+                return res.status(400).json({
+                    error: `La Orden de Compra #${po.id} debe estar RECIBIDA para poder facturar. Estado actual: ${po.status}`
+                });
+            }
+
             const billedSoFar = po.invoices.reduce((sum, inv) => sum + Number(inv.totalAmount), 0);
             const newTotal = billedSoFar + parseFloat(totalAmount);
 

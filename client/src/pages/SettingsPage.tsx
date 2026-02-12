@@ -7,6 +7,8 @@ import api from '../api/client';
 import type { Account, ThirdParty, Program, Bank } from '../types';
 import { cn } from '../lib/utils';
 import { Users, Layers, Book, Building, PieChart, ShieldAlert, UserCog } from 'lucide-react';
+import { useConfirm } from '../context/ConfirmContext';
+import { showToast } from '../lib/toast';
 
 type Tab = 'ACCOUNTS' | 'THIRD_PARTIES' | 'PROGRAMS' | 'BANKS' | 'BUDGET' | 'MAINTENANCE' | 'USERS';
 
@@ -16,9 +18,9 @@ export const SettingsPage = () => {
     const [data, setData] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // Modal State
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any | null>(null);
+    const { confirm } = useConfirm();
 
     // For Accounts specific requirements
     const [allAccounts, setAllAccounts] = useState<Account[]>([]);
@@ -79,7 +81,14 @@ export const SettingsPage = () => {
 
     const handleDelete = async (item: any) => {
         if (activeTab === 'USERS') return; // Handled by component
-        if (!confirm('¿Está seguro de eliminar este registro?')) return;
+
+        if (!await confirm({
+            title: 'Eliminar Registro',
+            message: '¿Está seguro de eliminar este registro?',
+            confirmText: 'Eliminar',
+            type: 'danger'
+        })) return;
+
         try {
             let url = '';
             if (activeTab === 'ACCOUNTS') url = `/settings/accounts/${item.id}`;
@@ -92,7 +101,7 @@ export const SettingsPage = () => {
             fetchTabDate();
         } catch (err) {
             console.error(err);
-            alert('Error al eliminar');
+            showToast.error('Error al eliminar');
         }
     };
 

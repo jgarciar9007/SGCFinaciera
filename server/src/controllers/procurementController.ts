@@ -39,7 +39,8 @@ export const createPurchaseOrder = async (req: AuthenticatedRequest, res: Respon
                 expenseRequestId,
                 supplierName,
                 supplierTaxId,
-                totalAmount: expense.totalAmount
+                totalAmount: expense.totalAmount,
+                budgetAccountId: expense.budgetAccountId // Copy budget account link
             }
         });
 
@@ -69,8 +70,9 @@ export const getPurchaseOrders = async (req: AuthenticatedRequest, res: Response
         let result = pos;
         if (status === 'pending_invoice') {
             result = pos.filter(po => {
-                // Ignore CLOSED or REJECTED
-                if (po.status === 'CLOSED') return false;
+                // STRICT RULE: Only RECEIVED or PARTIAL (if partial billing allowed)
+                // We exclude ISSUED (waiting reception)
+                if (po.status !== 'RECEIVED' && po.status !== 'PARTIAL') return false;
 
                 // Calculate total invoiced
                 const invoicedAmount = po.invoices.reduce((sum, inv) => sum + Number(inv.totalAmount), 0);

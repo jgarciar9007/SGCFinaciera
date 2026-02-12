@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import api from '../../api/client';
 import { Trash2, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useConfirm } from '../../context/ConfirmContext';
+import { showToast } from '../../lib/toast';
 
 export const ClearData = () => {
     const [selectedModules, setSelectedModules] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState('');
+
+    const { confirm } = useConfirm();
 
     const modules = [
         { id: 'EXPENSES', label: 'Gastos y Aprobaciones', description: 'Elimina solicitudes, aprobaciones y adjuntos.' },
@@ -26,8 +30,19 @@ export const ClearData = () => {
     const handleClear = async () => {
         if (selectedModules.length === 0) return;
 
-        if (!confirm('⚠️ ¿ESTÁS SEGURO? \n\nEsta acción es irreversible y eliminará PERMANENTEMENTE todos los datos de prueba de los módulos seleccionados.')) return;
-        if (!confirm('CONFIRMACIÓN FINAL: \n\n¿Deseas proceder con la eliminación?')) return;
+        if (!await confirm({
+            title: '⚠️ ZONA DE PELIGRO',
+            message: 'Esta acción es irreversible y eliminará PERMANENTEMENTE todos los datos de prueba de los módulos seleccionados. ¿Está seguro?',
+            confirmText: 'SÍ, ELIMINAR',
+            type: 'danger'
+        })) return;
+
+        if (!await confirm({
+            title: 'CONFIRMACIÓN FINAL',
+            message: '¿Realmente desea proceder con la eliminación?',
+            confirmText: 'ESTOY SEGURO',
+            type: 'danger'
+        })) return;
 
         setLoading(true);
         setSuccess('');
@@ -36,11 +51,12 @@ export const ClearData = () => {
             await api.post('/admin/clear-data', { modules: selectedModules });
             setSuccess('Datos eliminados correctamente.');
             setSelectedModules([]);
+            showToast.success('Datos eliminados correctamente');
             // Optional: trigger a global refresh or reload
             setTimeout(() => window.location.reload(), 2000);
         } catch (error) {
             console.error(error);
-            alert('Error al eliminar datos. Verifica que tengas permisos de Administrador.');
+            showToast.error('Error al eliminar datos. Verifica que tengas permisos de Administrador.');
         } finally {
             setLoading(false);
         }

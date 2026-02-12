@@ -4,6 +4,7 @@ import { Modal } from '../ui/Modal';
 import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { Tag, MapPin, DollarSign, FileText } from 'lucide-react';
+import { showToast } from '../../lib/toast';
 
 interface CreateAssetModalProps {
     isOpen: boolean;
@@ -58,7 +59,7 @@ export const CreateAssetModal = ({ isOpen, onClose, onSuccess }: CreateAssetModa
             });
         } catch (error) {
             console.error(error);
-            alert('Error al crear activo');
+            showToast.error('Error al crear activo');
         } finally {
             setLoading(false);
         }

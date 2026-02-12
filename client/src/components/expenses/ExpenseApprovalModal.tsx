@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 import type { ExpenseRequest, ExpenseQuotation } from '../../types';
 import api from '../../api/client';
 import { Check, X, FileText } from 'lucide-react';
+import { showToast } from '../../lib/toast';
 
 interface ExpenseApprovalModalProps {
     isOpen: boolean;
@@ -26,7 +27,7 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
 
             if (status === 'APPROVED') {
                 if (!approvalFile) {
-                    alert('Debe adjuntar el documento de aprobación.');
+                    showToast.error('Debe adjuntar el documento de aprobación.');
                     setLoading(false);
                     return;
                 }
@@ -50,9 +51,9 @@ export const ExpenseApprovalModal = ({ isOpen, onClose, onSuccess, expense }: Ex
             onClose();
             setApprovalFile(null);
             setSelectedQuotationId(null);
-        } catch (error) {
-            console.error('Failed to update status', error);
-            alert('Error al actualizar el estado');
+        } catch (err: any) {
+            console.error(err);
+            showToast.error(err.response?.data?.error || 'Error al procesar la aprobación');
         } finally {
             setLoading(false);
         }

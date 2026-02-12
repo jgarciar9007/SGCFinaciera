@@ -262,7 +262,11 @@ export class AccountingService {
                 include: {
                     invoice: {
                         include: {
-                            purchaseOrder: true
+                            purchaseOrder: {
+                                include: {
+                                    expenseRequest: true // Include Expense Linked to PO
+                                }
+                            }
                         }
                     }
                 }
@@ -282,12 +286,19 @@ export class AccountingService {
 
             // 2. Mover presupuesto (Si hay OC vinculada)
             const po = payment.invoice.purchaseOrder;
-            if (po && po.budgetAccountId) {
-                await this.moveBudgetToExecuted(
-                    po.budgetAccountId,
-                    Number(payment.amount),
-                    `Ejecución por Pago Conciliado #${payment.id} (Factura ${payment.invoice.number})`
-                );
+            if (po) {
+                // Fallback: Use PO's budgetAccountId OR Expense's budgetAccountId
+                const budgetAccountId = po.budgetAccountId || po.expenseRequest?.budgetAccountId;
+
+                if (budgetAccountId) {
+                    await this.moveBudgetToExecuted(
+                        budgetAccountId,
+                        Number(payment.amount),
+                        `Ejecución por Pago Conciliado #${payment.id} (Factura ${payment.invoice.number})`
+                    );
+                } else {
+                    console.warn(`⚠️ Pago #${payment.id} conciliado pero sin cuenta presupuestal vinculada (OC #${po.id})`);
+                }
             }
 
             console.log(`✅ Pago #${paymentId} conciliado correctamente`);

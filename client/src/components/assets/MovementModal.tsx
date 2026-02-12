@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import api from '../../api/client';
 import { cn } from '../../lib/utils';
 import type { User, Area } from '../../types';
+import { showToast } from '../../lib/toast';
 
 interface MovementModalProps {
     asset: { id: number; name: string; code?: string; status: string; quantity: number };
@@ -62,7 +63,7 @@ export const MovementModal = ({ asset, onClose, onSuccess }: MovementModalProps)
             onClose();
         } catch (error) {
             console.error(error);
-            alert('Error al registrar movimiento');
+            showToast.error('Error al registrar movimiento');
         } finally {
             setLoading(false);
         }

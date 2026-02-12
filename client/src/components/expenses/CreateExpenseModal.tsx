@@ -3,6 +3,7 @@ import api from '../../api/client';
 import { Modal } from '../ui/Modal';
 import { cn } from '../../lib/utils';
 import { Plus, Trash, Upload, X } from 'lucide-react';
+import { showToast } from '../../lib/toast';
 
 import type { BudgetAccount, ThirdParty } from '../../types';
 
@@ -71,7 +72,7 @@ export const CreateExpenseModal = ({ isOpen, onClose, onSuccess }: CreateExpense
             setIsCreatingSupplier(false);
         } catch (err) {
             console.error(err);
-            alert('Error al crear proveedor');
+            showToast.error('Error al crear proveedor');
         }
     };
 

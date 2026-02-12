@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import type { Account, ThirdParty, Program, Bank } from '../../types';
 import { cn } from '../../lib/utils'; // Assuming this exists or generic class usage
+import { showToast } from '../../lib/toast';
 
 type ModalType = 'ACCOUNT' | 'THIRD_PARTY' | 'PROGRAM' | 'BANK' | 'BUDGET';
 
@@ -43,7 +44,7 @@ export const MasterModal = ({ isOpen, onClose, onSave, type, initialData, accoun
             onClose();
         } catch (err) {
             console.error(err);
-            alert('Failed to save');
+            showToast.error('Error al guardar');
         } finally {
             setLoading(false);
         }

@@ -6,8 +6,11 @@ import { cn } from '../../lib/utils';
 import { CreateExpenseModal } from './CreateExpenseModal';
 import { ExpenseApprovalModal } from './ExpenseApprovalModal';
 import { translateStatus } from '../../utils/translations';
+import { useConfirm } from '../../context/ConfirmContext';
+import { showToast } from '../../lib/toast';
 
 export const ExpenseList = () => {
+    const { confirm } = useConfirm();
     const [expenses, setExpenses] = useState<ExpenseRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -41,12 +44,19 @@ export const ExpenseList = () => {
 
     const handleDelete = async (e: React.MouseEvent, id: number) => {
         e.stopPropagation();
-        if (!confirm('¿Está seguro de eliminar este borrador?')) return;
+        if (!await confirm({
+            title: 'Eliminar Borrador',
+            message: '¿Está seguro de eliminar este borrador?',
+            confirmText: 'Eliminar',
+            type: 'danger'
+        })) return;
+
         try {
             await api.delete(`/expenses/${id}`);
             fetchExpenses();
+            showToast.success('Borrador eliminado');
         } catch (err) {
-            alert('Error al eliminar el borrador');
+            showToast.error('Error al eliminar el borrador');
         }
     };
 
