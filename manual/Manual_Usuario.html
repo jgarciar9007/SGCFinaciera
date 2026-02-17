@@ -3,217 +3,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual de Usuario - SGCFinaciera</title>
+    <title>Manual de Usuario Detallado - SGCFinaciera</title>
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1e40af;
-            --secondary: #64748b;
-            --bg-light: #f8fafc;
-            --text-dark: #0f172a;
-            --text-light: #475569;
+            --secondary: #475569;
+            --bg-light: #f1f5f9;
+            --text-main: #0f172a;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
         }
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
+            color: var(--text-main);
+            background: var(--bg-light);
             margin: 0;
-            padding: 0;
+            padding: 2rem;
         }
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
             background: white;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            min-height: 100vh;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-        header {
-            text-align: center;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 2rem;
-        }
-        h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        h2 {
+        h1, h2, h3, h4 {
             color: var(--primary-dark);
-            margin-top: 2.5rem;
-            border-left: 4px solid var(--primary);
-            padding-left: 1rem;
         }
-        p {
-            color: var(--text-light);
-            margin-bottom: 1rem;
+        h1 { border-bottom: 3px solid var(--primary); padding-bottom: 1rem; margin-bottom: 2rem; }
+        h2 { 
+            margin-top: 3rem; 
+            border-bottom: 2px solid #e2e8f0; 
+            padding-bottom: 0.5rem;
+            color: var(--primary);
         }
-        img {
+        h3 { margin-top: 2rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .screenshot-container {
+            border: 1px solid #cbd5e1;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8fafc;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .screenshot-container img {
             max-width: 100%;
             height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .placeholder-img {
+            background: #e2e8f0;
+            color: #64748b;
+            padding: 3rem;
+            border: 2px dashed #94a3b8;
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin: 1.5rem 0;
-            border: 1px solid #e2e8f0;
+            font-style: italic;
         }
-        .note {
-            background-color: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .toc {
-            background: #f1f5f9;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-        .toc ul {
+
+        .step-list {
+            counter-reset: step;
             list-style: none;
             padding: 0;
         }
-        .toc li {
-            margin-bottom: 0.5rem;
+        .step-list li {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
         }
-        .toc a {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: 500;
-        }
-        .toc a:hover {
-            text-decoration: underline;
-        }
-        .placeholder-img {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 300px;
-            background-color: #f1f5f9;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            color: #94a3b8;
-            margin: 1.5rem 0;
-            flex-direction: column;
-        }
-        footer {
-            margin-top: 4rem;
+        .step-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: -0.2rem;
+            background: var(--primary);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
             text-align: center;
-            color: var(--secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 2rem;
+            line-height: 2rem;
+            font-weight: bold;
         }
+
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+        .field-table th {
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #bcdbfb;
+        }
+        .field-table td {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        .required { color: var(--danger); font-weight: bold; }
+        
+        .test-case {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+        }
+        .test-case-title {
+            color: var(--success);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background: var(--secondary);
+        }
+        .badge.btn { background: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>SGCFinaciera</h1>
-            <p>Sistema de Gestión Contable y Financiera</p>
-            <p><strong>Manual de Usuario v1.0</strong></p>
-        </header>
 
-        <div class="toc">
-            <h3>Contenido</h3>
-            <ul>
-                <li><a href="#acceso">1. Acceso al Sistema</a></li>
-                <li><a href="#dashboard">2. Panel de Control (Dashboard)</a></li>
-                <li><a href="#compras">3. Compras (Procurement)</a></li>
-                <li><a href="#facturacion">4. Facturación (Billing)</a></li>
-                <li><a href="#gastos">5. Gastos (Expenses)</a></li>
-                <li><a href="#tesoreria">6. Tesorería (Treasury)</a></li>
-                <li><a href="#presupuesto">7. Presupuesto (Budget)</a></li>
-                <li><a href="#activos">8. Activos Fijos (Assets)</a></li>
-                <li><a href="#contabilidad">9. Contabilidad (Accounting)</a></li>
-                <li><a href="#configuracion">10. Configuración (Settings)</a></li>
-            </ul>
-        </div>
+<div class="container">
+    <header>
+        <h1>SGCFinanciera - Manual de Usuario Detallado</h1>
+        <p><strong>Versión:</strong> 2.2 | <strong>Fecha:</strong> 2026</p>
+        <p>Este manual describe el funcionamiento completo del sistema, detallando cada formulario, campo y flujo de trabajo. Incluye todas las capturas de pantalla disponibles.</p>
+    </header>
 
-        <div class="note">
-            <strong>Nota Importante:</strong> Algunas capturas de pantalla pueden no estar disponibles debido a restricciones de conexión con la base de datos durante la generación de este manual. Se recomienda ejecutar el script de captura automática una vez restablecida la conexión.
-        </div>
+    <nav>
+        <h3>Índice de Contenidos</h3>
+        <ol>
+            <li><a href="#acceso">1. Acceso al Sistema</a></li>
+            <li><a href="#dashboard">2. Panel de Control (Dashboard)</a></li>
+            <li><a href="#tesoreria">3. Tesorería</a></li>
+            <li><a href="#presupuesto">4. Presupuesto</a></li>
+            <li><a href="#gastos">5. Gastos</a></li>
+            <li><a href="#compras">6. Compras</a></li>
+            <li><a href="#facturacion">7. Facturación</a></li>
+            <li><a href="#activos">8. Activos Fijos</a></li>
+            <li><a href="#contabilidad">9. Contabilidad</a></li>
+            <li><a href="#reportes">10. Reportes</a></li>
+            <li><a href="#configuracion">11. Configuración</a></li>
+        </ol>
+    </nav>
 
-        <section id="acceso">
-            <h2>1. Acceso al Sistema</h2>
-            <p>Para ingresar al sistema, diríjase a la página de inicio de sesión.</p>
-            <img src="01_login.png" alt="Pantalla de Inicio de Sesión">
-            <p>Ingrese sus credenciales:</p>
-            <ul>
-                <li><strong>Email:</strong> Su correo corporativo (ej. admin@example.com)</li>
-                <li><strong>Contraseña:</strong> Su clave de acceso segura.</li>
-            </ul>
-        </section>
-
-        <section id="dashboard">
-            <h2>2. Panel de Control (Dashboard)</h2>
-            <p>El centro de operaciones financieras. Ofrece una visión panorámica del estado actual.</p>
-            <img src="02_dashboard.png" alt="Captura del Dashboard">
-            <p><strong>Componentes principales:</strong></p>
-            <ul>
-                <li><strong>KPIs:</strong> Tesorería total, ejecución presupuestal, facturas pendientes.</li>
-                <li><strong>Gráficos:</strong> Ejecución mensual de gastos y distribución del presupuesto.</li>
-                <li><strong>Actividad Reciente:</strong> Últimos movimientos y aprobaciones.</li>
-            </ul>
-        </section>
-
-        <section id="compras">
-            <h2>3. Compras (Procurement)</h2>
-            <p>Gestión integral del ciclo de compras.</p>
-            <img src="03_procurement.png" alt="Captura del Módulo de Compras">
-            <p>Permite visualizar, crear y gestionar órdenes de compra, proveedores y recepciones.</p>
-        </section>
-
-        <section id="facturacion">
-            <h2>4. Facturación (Billing)</h2>
-            <p>Control de cuentas por pagar y facturas recibidas.</p>
-             <img src="04_billing.png" alt="Captura del Módulo de Facturación">
-        </section>
-
-        <section id="gastos">
-            <h2>5. Gastos (Expenses)</h2>
-            <p>Control de gastos operativos y reembolsos.</p>
-             <img src="05_expenses.png" alt="Captura del Módulo de Gastos">
-        </section>
-
-        <section id="tesoreria">
-            <h2>6. Tesorería (Treasury)</h2>
-            <p>Gestión de las cuentas bancarias y flujo de caja.</p>
-             <img src="08_treasury.png" alt="Captura del Módulo de Tesorería">
-        </section>
-
-        <section id="presupuesto">
-            <h2>7. Presupuesto (Budget)</h2>
-            <p>Planificación y seguimiento del presupuesto anual.</p>
-             <img src="09_budget.png" alt="Captura del Módulo de Presupuesto">
-        </section>
-
-        <section id="activos">
-            <h2>8. Activos Fijos (Assets)</h2>
-            <p>Inventario y control de activos fijos.</p>
-             <img src="10_assets.png" alt="Captura del Módulo de Activos">
-        </section>
-
-        <section id="contabilidad">
-            <h2>9. Contabilidad (Accounting)</h2>
-            <p>Registros contables y plan de cuentas.</p>
-             <img src="11_accounting.png" alt="Captura del Módulo de Contabilidad">
-        </section>
-
-        <section id="configuracion">
-            <h2>10. Configuración (Settings)</h2>
-            <p>Ajustes generales del sistema y usuarios.</p>
-             <img src="06_settings.png" alt="Captura del Módulo de Configuración">
-        </section>
+    <!-- ================= ACCESO ================= -->
+    <section id="acceso">
+        <h2>1. Acceso al Sistema</h2>
+        <p>El portal de entrada seguro para todos los usuarios autorizados.</p>
         
-        <!-- ... (Shortened for brevity here, but I will include full in real file) ... -->
+        <div class="screenshot-container">
+            <img src="01_login.png" alt="Pantalla de Login" onerror="this.src='https://via.placeholder.com/800x400?text=Login'">
+            <p><em>Figura 1: Pantalla de Inicio de Sesión</em></p>
+        </div>
 
-        <footer>
-            <p>&copy; 2026 SGCFinaciera. Todos los derechos reservados.</p>
-            <p>Generado automáticamente por Antigravity</p>
-        </footer>
-    </div>
+        <div class="test-case">
+            <div class="test-case-title">Datos de Acceso (Prueba)</div>
+            <ul>
+                <li><strong>Usuario:</strong> admin@example.com</li>
+                <li><strong>Contraseña:</strong> admin123</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ================= DASHBOARD ================= -->
+    <section id="dashboard">
+        <h2>2. Panel de Control (Dashboard)</h2>
+        <p>Resumen ejecutivo del estado financiero y operativo de la organización.</p>
+        
+        <div class="screenshot-container">
+            <img src="02_dashboard_v2.png" alt="Dashboard Principal" onerror="this.src='https://via.placeholder.com/800x400?text=Dashboard+v2'">
+            <p><em>Figura 2: Dashboard con KPIs avanzados y seguimiento mensual</em></p>
+        </div>
+
+        <h3>Indicadores Clave (KPIs)</h3>
+        <p>En la parte superior, encontrará tarjetas con información vital:</p>
+        <ul>
+            <li><strong>Total Tesorería:</strong> Suma de saldos disponibles en todas las cuentas bancarias (Caja y Bancos).</li>
+            <li><strong>Ejecución Presupuestal:</strong> Porcentaje del presupuesto anual que ya ha sido consumido (pagado).</li>
+            <li><strong>Facturas Pendientes (Rojo):</strong> Número y monto total de facturas recibidas de proveedores que aún no han sido pagadas. Requieren atención inmediata.</li>
+            <li><strong>Órdenes de Compra (Morado):</strong> Número de pedidos emitidos o en proceso de recepción.</li>
+        </ul>
+
+        <h3>Sección de Compras y Facturación</h3>
+        <p>Un resumen rápido del ciclo de gastos:</p>
+        <ul>
+            <li><strong>Total Facturas:</strong> Documentos registrados en el sistema.</li>
+            <li><strong>Facturas Pagadas (Verde):</strong> Documentos finalizados.</li>
+            <li><strong>Facturas Sin Pagar (Rojo):</strong> Alerta visual de obligaciones pendientes.</li>
+        </ul>
+
+        <h3>Gráficos de Análisis</h3>
+        <ul>
+            <li><strong>Ejecución Mensual (Barras):</strong> Muestra el gasto total mes a mes, permitiendo identificar picos estacionales de gasto (Ej: Enero/Febrero).</li>
+            <li><strong>Distribución Anual (Donut):</strong> Visualiza la proporción entre Presupuesto Comprometido (POs emitidas), Ejecutado (Pagado) y Disponible.</li>
+        </ul>
+    </section>
+
+    <!-- ================= TESORERÍA ================= -->
+    <section id="tesoreria">
+        <h2>3. Módulo de Tesorería</h2>
+        <p>Gestión centralizada de cuentas bancarias y flujo de caja.</p>
+        
+        <div class="screenshot-container">
+            <img src="08_treasury_dashboard_v2.png" alt="Tesorería Dashboard" onerror="this.src='https://via.placeholder.com/800x400?text=Tesorería+Dashboard'">
+            <p><em>Figura 3: Panel de Control de Tesorería</em></p>
+        </div>
+
+        <h3>3.1. Estado de Cuentas</h3>
+        <p>Cada tarjeta representa una cuenta bancaria real. El sistema muestra:</p>
+        <ul>
+            <li><strong>Saldo Disponible:</strong> Dinero real listo para usar. Se actualiza automáticamente con cada pago o ingreso.</li>
+            <li><strong>Estado:</strong> El indicador "Activa" confirma que la cuenta está habilitada para operaciones.</li>
+            <li><strong>Banco y Número:</strong> Identificación rápida (últimos 4 dígitos) para evitar errores en las transacciones.</li>
+        </ul>
+
+        <h3>3.2. Historial de Movimientos</h3>
+        <p>Debajo de las tarjetas, encontrará la tabla de "Movimientos Históricos". Aquí queda registrada cada transacción (ingresos y egresos), vinculada siempre a un documento soporte (Factura, Recibo de Caja).</p>
+    </section>
+
+    <!-- ================= PRESUPUESTO ================= -->
+    <section id="presupuesto">
+        <h2>4. Módulo de Presupuesto</h2>
+        <p>Control de ejecución presupuestal en tiempo real.</p>
+        
+        <div class="screenshot-container">
+            <img src="09_budget_overview_v2.png" alt="Resumen Presupuestal" onerror="this.src='https://via.placeholder.com/800x400?text=Resumen+Presupuestal'">
+            <p><em>Figura 4: Tablero de Control Presupuestal</em></p>
+        </div>
+
+        <h3>Indicadores de Ejecución</h3>
+        <p>Los paneles superiores ofrecen una visión macro del año fiscal:</p>
+        <ul>
+            <li><strong>Asignado (Azul):</strong> Presupuesto total aprobado para el año ($1.000.000.000).</li>
+            <li><strong>Ejecutado (Verde):</strong> Dinero que ya ha salido de caja (Pagado).</li>
+            <li><strong>Comprometido (Amarillo):</strong> Dinero reservado por Órdenes de Compra emitidas pero aún no facturadas/pagadas. Es vital para no sobregire el presupuesto real.</li>
+            <li><strong>Disponible (Morado):</strong> El saldo real libre para nuevos gastos.</li>
+        </ul>
+
+        <h3>Desglose por Rubros</h3>
+        <p>La tabla inferior detalla cada cuenta (Ej: BP-001 Nómina, BP-002 Gastos Generales), permitiendo ver qué áreas están consumiendo más recursos de lo planeado.</p>
+    </section>
+
+    <!-- ================= GASTOS ================= -->
+    <section id="gastos">
+        <h2>5. Gestión de Gastos y Aprobaciones</h2>
+        <p>El sistema permite un control detallado de cada solicitud de compra antes de que se convierta en un compromiso financiero.</p>
+
+        <div class="screenshot-container">
+            <img src="05_expense_detail_v2.png" alt="Detalle de Aprobación" onerror="this.src='https://via.placeholder.com/800x400?text=Detalle+Aprobación'">
+            <p><em>Figura 5: Evaluación y Aprobación de Solicitudes</em></p>
+        </div>
+
+        <h3>5.1. Proceso de Evaluación</h3>
+        <p>Al expandir una solicitud (como la #26 en la imagen), el aprobador puede ver:</p>
+        <ul>
+            <li><strong>Ítems Detallados:</strong> Qué se está pidiendo exactamente (Ej: "Sillas", 11 unidades).</li>
+            <li><strong>Comparativa de Cotizaciones:</strong> El sistema permite cargar múltiples ofertas.
+                <ul>
+                    <li>El usuario selecciona al proveedor ganador (marcado en verde, ej: "Servicios Tecnológicos Ltd.").</li>
+                    <li>Se visualiza el ahorro o sobrecosto respecto al presupuesto estimado.</li>
+                </ul>
+            </li>
+        </ul>
+        <h3>5.2. Documento de Aprobación</h3>
+        <p>Una vez aprobado, se genera un soporte digital inmutable. El botón "Ver Soporte de Aprobación" permite descargar este documento para auditoría.</p>
+    </section>
+    
+    <!-- ================= COMPRAS ================= -->
+    <section id="compras">
+        <h2>6. Compras y Adquisiciones (Procurement)</h2>
+        <p>Transformación de solicitudes aprobadas en pedidos formales a proveedores.</p>
+
+        <div class="screenshot-container">
+            <img src="03_procurement_v2.png" alt="Órdenes de Compra" onerror="this.src='https://via.placeholder.com/800x400?text=Órdenes+de+Compra'">
+            <p><em>Figura 6: Control de Órdenes de Compra (PO)</em></p>
+        </div>
+
+        <h3>Gestión de Órdenes (PO)</h3>
+        <ul>
+            <li><strong>Emitidas (Azul):</strong> La orden ha sido creada y enviada al proveedor, pero los bienes aún no llegan.</li>
+            <li><strong>Recibidas (Verde):</strong> Los bienes han llegado y se ha registrado la recepción (entrada a almacén).</li>
+            <li><strong>Acción "Recibir":</strong> Botón negro disponible en órdenes emitidas para marcar que la mercancía ha llegado.</li>
+        </ul>
+    </section>
+
+    <!-- ================= FACTURACIÓN ================= -->
+    <section id="facturacion">
+        <h2>7. Facturación y Pagos</h2>
+        <p>Gestión del ciclo de pago a proveedores.</p>
+
+        <div class="screenshot-container">
+            <img src="04_billing_v2.png" alt="Facturación Lista" onerror="this.src='https://via.placeholder.com/800x400?text=Facturas+Listado'">
+            <p><em>Figura 7.1: Gestión de Cuentas por Pagar</em></p>
+        </div>
+
+        <h3>7.1. Registro de Pagos</h3>
+        <p>El momento crítico de salida de dinero se controla mediante un asistente seguro.</p>
+
+        <div class="screenshot-container">
+            <img src="04_payment_modal_v2.png" alt="Modal de Pago" onerror="this.src='https://via.placeholder.com/800x400?text=Modal+Pago'">
+            <p><em>Figura 7.2: Asistente de Tesorería para Pagos</em></p>
+        </div>
+
+        <p>Al hacer clic en "Registrar Pago", una ventana emergente (modal) guía al usuario:</p>
+        <ol>
+            <li><strong>Confirmación de Factura:</strong> Muestra el proveedor y monto a pagar.</li>
+            <li><strong>Selección de Origen de Fondos:</strong> El usuario elige la cuenta bancaria.
+                <ul>
+                    <li><em>Seguridad:</em> El sistema muestra en tiempo real el <strong>Saldo Disponible</strong> (en verde) y calcula el <strong>Saldo Después del Pago</strong>. Si no hay fondos, no permite continuar.</li>
+                </ul>
+            </li>
+            <li><strong>Referencia:</strong> Campo obligatorio para el número de cheque o código de transferencia electrónica.</li>
+        </ol>
+    </section>
+
+    <!-- ================= ACTIVOS ================= -->
+    <section id="activos">
+        <h2>8. Activos Fijos</h2>
+        <p>Control centralizado del inventario valorizado de la organización.</p>
+
+        <div class="screenshot-container">
+            <img src="10_assets_list_v2.png" alt="Listado de Activos" onerror="this.src='https://via.placeholder.com/800x400?text=Listado+de+Activos'">
+            <p><em>Figura 8: Inventario de Equipos, Muebles y Enseres</em></p>
+        </div>
+
+        <h3>Gestión de Activos</h3>
+        <p>La tabla muestra todos los elementos propiedad de la empresa, detallando:</p>
+        <ul>
+            <li><strong>Código y Nombre:</strong> Identificación única y descripción (Ej: "Laptop HP", "Silla Gerencial").</li>
+            <li><strong>Ubicación:</strong> Dónde se encuentra físicamente el activo (Ej: Bodega Central, Oficina Principal).</li>
+            <li><strong>Valor Unitario:</strong> Costo de adquisición histórico.</li>
+            <li><strong>Estado (Badge):</strong> Indica si está en Bodega, Asignado, o en Mantenimiento.</li>
+            <li><strong>Acción "Mover":</strong> Permite cambiar la ubicación o responsable del activo.</li>
+        </ul>
+    </section>
+
+    <!-- ================= CONTABILIDAD ================= -->
+    <section id="contabilidad">
+        <h2>9. Contabilidad</h2>
+        <p>El módulo contable es el repositorio central de toda la información financiera. Se divide en cuatro pestañas principales para facilitar la auditoría.</p>
+
+        <h3>9.1. Libro Diario</h3>
+        <p>Registro cronológico de todos los asientos generados automáticamente por el sistema (al emitir facturas, recibir pagos, etc.).</p>
+        <div class="screenshot-container">
+            <img src="11_accounting_journal_v2.png" alt="Libro Diario" onerror="this.src='https://via.placeholder.com/800x400?text=Libro+Diario'">
+            <p><em>Figura 9.1: Vista detallada de Asientos Contables</em></p>
+        </div>
+        <p>Al expandir un asiento (como el #36 en la imagen), se puede ver el detalle de Débitos y Créditos, garantizando que cada operación esté balanceada.</p>
+
+        <h3>9.2. Libro Mayor (Terceros)</h3>
+        <p>Permite analizar los saldos por proveedor o entidad. Es fundamental para conciliaciones.</p>
+        <div class="screenshot-container">
+            <img src="11_accounting_ledger_v2.png" alt="Libro Mayor" onerror="this.src='https://via.placeholder.com/800x400?text=Libro+Mayor'">
+            <p><em>Figura 9.2: Saldos por Tercero</em></p>
+        </div>
+        <p>Muestra cuánto se ha movido (Débitos/Créditos) con cada tercero y su saldo final.</p>
+
+        <h3>9.3. Balance de Comprobación</h3>
+        <p>Resumen de saldos de todas las cuentas del PUC (Plan Único de Cuentas).</p>
+        <div class="screenshot-container">
+            <img src="11_accounting_balance_v2.png" alt="Balance de Comprobación" onerror="this.src='https://via.placeholder.com/800x400?text=Balance+de+Comprobación'">
+            <p><em>Figura 9.3: Balance de Prueba</em></p>
+        </div>
+        <p>Verifica la integridad de la contabilidad asegurando que la suma total de débitos iguale a los créditos (Saldo cero al final).</p>
+
+        <h3>9.4. Estado Presupuestario</h3>
+        <p>Reporte cruzado que compara la ejecución contable contra el presupuesto.</p>
+        <div class="screenshot-container">
+            <img src="11_accounting_budget_report_v2.png" alt="Estado Presupuestario" onerror="this.src='https://via.placeholder.com/800x400?text=Reporte+Presupuestal'">
+            <p><em>Figura 9.4: Ejecución Presupuestal Detallada</em></p>
+        </div>
+        <ul>
+            <li><strong>Comprometido:</strong> Valor de contratos/pedidos firmados.</li>
+            <li><strong>Devengado:</strong> Valor de facturas recibidas y aceptadas (obligación real).</li>
+            <li><strong>% Ejecución:</strong> Métrica clave de avance financiero por rubro.</li>
+            <li><strong>Botón Exportar:</strong> Permite descargar este informe oficial para presentaciones.</li>
+        </ul>
+    </section>
+
+    <!-- ================= REPORTES ================= -->
+    <section id="reportes">
+        <h2>10. Reportes y Analítica</h2>
+        <p>Centro de inteligencia de negocios para la toma de decisiones basada en datos.</p>
+        
+        <div class="screenshot-container">
+            <img src="07_reports.png" alt="Reportes" onerror="this.src='https://via.placeholder.com/800x400?text=Reportes'">
+            <p><em>Figura 10: Tablero de Análisis General</em></p>
+        </div>
+
+        <h3>Categorías de Análisis</h3>
+        <ul>
+            <li><strong>Financieros:</strong> Balances, Estado de Resultados, Flujo de Caja.</li>
+            <li><strong>Presupuestales:</strong> Ejecución por rubro, seguimiento de compromisos.</li>
+            <li><strong>Operativos:</strong> Gastos por departamento, eficiencia de proveedores.</li>
+            <li><strong>Activos:</strong> Depreciación y estado del inventario.</li>
+        </ul>
+        <p>Todos los reportes permiten filtrar por rango de fechas y exportar a Excel/PDF para compartir.</p>
+    </section>
+
+    <!-- ================= CONFIGURACIÓN ================= -->
+    <section id="configuracion">
+        <h2>11. Configuración y Maestros</h2>
+        <p>Administración de los catálogos base que permiten el funcionamiento del sistema.</p>
+
+        <h3>11.1. Plan de Cuentas (PUC)</h3>
+        <div class="screenshot-container">
+            <img src="12_config_puc.png" alt="Plan de Cuentas" onerror="this.src='https://via.placeholder.com/800x400?text=Plan+de+Cuentas'">
+            <p><em>Figura 11.1: Estructura Contable</em></p>
+        </div>
+        <p>Administre la jerarquía contable (Clase, Grupo, Cuenta, Subcuenta). Es la columna vertebral para la automatización de asientos.</p>
+
+        <h3>11.2. Administración de Terceros</h3>
+        <div class="screenshot-container">
+            <img src="13_config_partners.png" alt="Terceros" onerror="this.src='https://via.placeholder.com/800x400?text=Terceros'">
+            <p><em>Figura 11.2: Directorio de Proveedores y Empleados</em></p>
+        </div>
+        <p>Base de datos centralizada de personas y empresas. Es vital registrar correctamente el RUT/NIT para el reporte de impuestos.</p>
+
+        <h3>11.3. Entidades Bancarias</h3>
+        <div class="screenshot-container">
+            <img src="14_config_banks.png" alt="Bancos" onerror="this.src='https://via.placeholder.com/800x400?text=Bancos'">
+            <p><em>Figura 11.3: Catálogo de Bancos</em></p>
+        </div>
+        <p>Configuración de los bancos donde la empresa tiene cuentas. Se usa para validar códigos SWIFT/IBAN en transferencias.</p>
+
+        <h3>11.4. Rubros Presupuestales</h3>
+        <div class="screenshot-container">
+            <img src="15_config_budget_items.png" alt="Rubros" onerror="this.src='https://via.placeholder.com/800x400?text=Rubros'">
+            <p><em>Figura 11.4: Configuración de Partidas</em></p>
+        </div>
+        <p>Definición de las bolsas de dinero (Ej: "Gastos de Viaje", "Infraestructura") y asignación del presupuesto inicial para el año fiscal.</p>
+
+        <h3>11.5. Usuarios y Roles</h3>
+        <div class="screenshot-container">
+            <img src="16_config_users.png" alt="Usuarios" onerror="this.src='https://via.placeholder.com/800x400?text=Usuarios'">
+            <p><em>Figura 11.5: Seguridad y Acceso</em></p>
+        </div>
+        <p>Administración de credenciales de acceso. Puede crear usuarios con roles específicos (ADMIN, CONTADOR, USUARIO) para restringir el acceso a módulos sensibles.</p>
+    </section>
+
+</div>
+
 </body>
 </html>
