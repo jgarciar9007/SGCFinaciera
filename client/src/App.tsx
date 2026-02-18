@@ -5,6 +5,8 @@ import { Layout } from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
 import { ConfirmProvider } from './context/ConfirmContext';
 import ToastContainer from './components/ToastContainer';
+import { RoleGuard } from './components/common/RoleGuard';
+import { Role } from './types';
 import { ExpensesPage } from './pages/ExpensesPage';
 import { ProcurementPage } from './pages/ProcurementPage';
 import { BillingPage } from './pages/BillingPage';
@@ -36,13 +38,44 @@ function App() {
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="expenses" element={<ExpensesPage />} />
-                <Route path="procurement" element={<ProcurementPage />} />
-                <Route path="billing" element={<BillingPage />} />
-                <Route path="treasury" element={<TreasuryPage />} />
-                <Route path="budget" element={<BudgetPage />} />
+
+                <Route path="procurement" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR]}>
+                    <ProcurementPage />
+                  </RoleGuard>
+                } />
+
+                <Route path="billing" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
+                    <BillingPage />
+                  </RoleGuard>
+                } />
+
+                <Route path="treasury" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN, Role.TREASURER, Role.ACCOUNTANT, Role.DIRECTOR]}>
+                    <TreasuryPage />
+                  </RoleGuard>
+                } />
+
+                <Route path="budget" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR, Role.MEMBER]}>
+                    <BudgetPage />
+                  </RoleGuard>
+                } />
+
                 <Route path="assets" element={<AssetsPage />} />
-                <Route path="accounting" element={<AccountingPage />} />
-                <Route path="settings" element={<SettingsPage />} />
+
+                <Route path="accounting" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
+                    <AccountingPage />
+                  </RoleGuard>
+                } />
+
+                <Route path="settings" element={
+                  <RoleGuard allowedRoles={[Role.ADMIN]}>
+                    <SettingsPage />
+                  </RoleGuard>
+                } />
               </Route>
             </Routes>
             <ToastContainer />

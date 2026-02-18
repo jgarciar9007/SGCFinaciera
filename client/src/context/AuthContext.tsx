@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/client';
-
-interface User {
-    id: number;
-    email: string;
-    fullName: string;
-    role: string;
-}
+import { Role } from '../types';
+import type { User } from '../types';
 
 interface AuthContextType {
     user: User | null;
@@ -14,6 +8,7 @@ interface AuthContextType {
     login: (token: string, user: User) => void;
     logout: () => void;
     isAuthenticated: boolean;
+    hasRole: (roles: Role[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,8 +41,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
+    const hasRole = (roles: Role[]) => {
+        if (!user) return false;
+        if (user.role === Role.ADMIN) return true; // ADMIN matches everything? Or explicit?
+        // Let's stick to explicit unless ADMIN is truly superuser in frontend logic too.
+        // Backend treats ADMIN as explicit usually locally, but let's say ADMIN checks pass.
+        if (user.role === Role.ADMIN) return true;
+        return roles.includes(user.role);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
+        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token, hasRole }}>
             {children}
         </AuthContext.Provider>
     );

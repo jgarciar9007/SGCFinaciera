@@ -1,10 +1,11 @@
 import { Request } from 'express';
+import { Role } from '@prisma/client';
 
 // Authenticated Request
 export interface AuthenticatedRequest extends Request {
-    user: {
+    user?: {
         userId: number;
-        role: string;
+        role: Role;
     };
 }
 
@@ -29,7 +30,10 @@ export interface UploadRequest extends Request {
     file?: Express.Multer.File;
     user?: {
         userId: number;
-        role: string;
+        user?: {
+            userId: number;
+            role: Role;
+        };
     };
 }
 

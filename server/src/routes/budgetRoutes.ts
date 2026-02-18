@@ -11,7 +11,15 @@ router.use(authenticateToken);
 router.get('/', getBudgetAccounts);
 
 // Only ADMIN and ACCOUNTANT can create/modify budget
-router.post('/', authorize('ADMIN', 'ACCOUNTANT'), createBudgetAccount);
-router.post('/transaction', authorize('ADMIN', 'ACCOUNTANT'), createBudgetTransaction);
+import { Role } from '@prisma/client';
+
+// ... imports
+
+// All users can view budget
+router.get('/', getBudgetAccounts);
+
+// Only ADMIN and ACCOUNTANT can create/modify budget
+router.post('/', authorize([Role.ADMIN, Role.ACCOUNTANT]), createBudgetAccount);
+router.post('/transaction', authorize([Role.ADMIN, Role.ACCOUNTANT]), createBudgetTransaction);
 
 export default router;

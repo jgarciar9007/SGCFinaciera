@@ -4,8 +4,13 @@ import type { BudgetAccount } from '../../types';
 import { ChevronRight, ChevronDown, Plus, Search } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { CreateAccountModal } from './CreateAccountModal';
+import { useAuth } from '../../context/AuthContext';
+import { Role } from '../../types';
 
 export const BudgetAccountList = () => {
+    const { hasRole } = useAuth();
+    const canCreate = hasRole([Role.ADMIN, Role.DIRECTOR, Role.ACCOUNTANT]);
+
     const [accounts, setAccounts] = useState<BudgetAccount[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -38,12 +43,14 @@ export const BudgetAccountList = () => {
                     <h2 className="text-2xl font-bold tracking-tight">Cuentas Presupuestales</h2>
                     <p className="text-muted-foreground">Gestiona y controla la ejecución del presupuesto.</p>
                 </div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
-                >
-                    <Plus className="w-4 h-4" /> Nueva Cuenta
-                </button>
+                {canCreate && (
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+                    >
+                        <Plus className="w-4 h-4" /> Nueva Cuenta
+                    </button>
+                )}
             </div>
 
             <div className="rounded-md border bg-card text-card-foreground shadow-sm">

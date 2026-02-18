@@ -13,13 +13,22 @@ model User {
   email     String   @unique
   password  String
   fullName  String
-  role      String   @default("USER") // ADMIN, ACCOUNTANT, DIRECTOR, USER
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   expenseRequests ExpenseRequest[] @relation("Requester")
   approvals       ExpenseRequest[] @relation("Approver")
   assetMovements  AssetMovement[]
+}
+
+enum Role {
+  ADMIN
+  USER
+  MEMBER
+  DIRECTOR
+  ACCOUNTANT
+  TREASURER
 }
 
 // Accounting (Contabilidad)

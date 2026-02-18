@@ -8,10 +8,14 @@ import api from '../api/client';
 import type { JournalEntry, Account, TrialBalanceItem } from '../types';
 import { cn } from '../lib/utils';
 import { BookOpen, FileBarChart, Plus, Users } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Role } from '../types';
 
 type Tab = 'JOURNAL' | 'REPORTS' | 'BUDGET' | 'LEDGER';
 
 export const AccountingPage = () => {
+    const { hasRole } = useAuth();
+    const canCreate = hasRole([Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER]);
     const [activeTab, setActiveTab] = useState<Tab>('JOURNAL');
     const [loading, setLoading] = useState(false);
     const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -71,7 +75,7 @@ export const AccountingPage = () => {
                     <h2 className="text-2xl font-bold tracking-tight">Contabilidad</h2>
                     <p className="text-muted-foreground">Registro cronológico y reportes financieros.</p>
                 </div>
-                {activeTab === 'JOURNAL' && (
+                {activeTab === 'JOURNAL' && canCreate && (
                     <button
                         onClick={() => setIsJournalModalOpen(true)}
                         className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"

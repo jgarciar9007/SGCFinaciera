@@ -8,8 +8,11 @@ import { ExpenseApprovalModal } from './ExpenseApprovalModal';
 import { translateStatus } from '../../utils/translations';
 import { useConfirm } from '../../context/ConfirmContext';
 import { showToast } from '../../lib/toast';
+import { useAuth } from '../../context/AuthContext';
+import { Role } from '../../types';
 
 export const ExpenseList = () => {
+    const { user, hasRole } = useAuth();
     const { confirm } = useConfirm();
     const [expenses, setExpenses] = useState<ExpenseRequest[]>([]);
     const [loading, setLoading] = useState(true);
@@ -18,7 +21,12 @@ export const ExpenseList = () => {
     const [approvalModal, setApprovalModal] = useState<{ isOpen: boolean; expense: ExpenseRequest | null }>({ isOpen: false, expense: null });
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
+    const canCreate = hasRole([Role.ADMIN, Role.USER]);
+    const canApprove = hasRole([Role.ADMIN, Role.DIRECTOR]); // Removed ACCOUNTANT
+    // const canDelete = hasRole([Role.ADMIN]); // Removed global check, using inline check
+
     const fetchExpenses = async () => {
+        // ... fetch implementation remains same ...
         setLoading(true);
         try {
             const response = await api.get('/expenses');
@@ -33,6 +41,8 @@ export const ExpenseList = () => {
             setLoading(false);
         }
     };
+
+    // ... useEffect and handlers remains same ...
 
     useEffect(() => {
         fetchExpenses();
@@ -75,8 +85,6 @@ export const ExpenseList = () => {
         setApprovalModal({ isOpen: true, expense });
     };
 
-
-
     if (loading) return <div>Cargando solicitudes...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
 
@@ -87,12 +95,14 @@ export const ExpenseList = () => {
                     <h2 className="text-2xl font-bold tracking-tight">Gastos y Solicitudes</h2>
                     <p className="text-muted-foreground">Gestiona las aprobaciones y soportes de gastos.</p>
                 </div>
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
-                >
-                    <Plus className="w-4 h-4" /> Nueva Solicitud
-                </button>
+                {canCreate && (
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+                    >
+                        <Plus className="w-4 h-4" /> Nueva Solicitud
+                    </button>
+                )}
             </div>
 
             <div className="rounded-md border bg-card text-card-foreground shadow-sm">
@@ -138,7 +148,7 @@ export const ExpenseList = () => {
                                         <td className="p-4 align-middle text-right font-bold">{Number(expense.totalAmount).toLocaleString('fr-FR')} FCFA</td>
                                         <td className="p-4 align-middle">{new Date(expense.createdAt).toLocaleDateString()}</td>
                                         <td className="p-4 align-middle flex items-center gap-2">
-                                            {expense.status === 'SUBMITTED' && (
+                                            {expense.status === 'SUBMITTED' && canApprove && (
                                                 <button
                                                     onClick={(e) => handleOpenApproval(e, expense)}
                                                     className="p-1 text-green-600 hover:bg-green-50 rounded"
@@ -147,7 +157,7 @@ export const ExpenseList = () => {
                                                     <CheckCircle className="w-5 h-5" />
                                                 </button>
                                             )}
-                                            {expense.status === 'DRAFT' && (
+                                            {expense.status === 'DRAFT' && (user?.role === Role.ADMIN || user?.id === expense.requesterId) && (
                                                 <button
                                                     onClick={(e) => handleDelete(e, expense.id)}
                                                     className="p-1 text-red-600 hover:bg-red-50 rounded"

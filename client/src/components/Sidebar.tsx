@@ -16,20 +16,22 @@ import {
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
+import { Role } from '../types';
+
 const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-    { icon: FileText, label: 'Gastos & Aprob.', path: '/expenses' },
-    { icon: ShoppingBag, label: 'Compras', path: '/procurement' },
-    { icon: CreditCard, label: 'Facturación', path: '/billing' },
-    { icon: Landmark, label: 'Tesorería', path: '/treasury' },
-    { icon: PieChart, label: 'Presupuesto', path: '/budget' },
-    { icon: Briefcase, label: 'Activos', path: '/assets' },
-    { icon: BookOpen, label: 'Contabilidad', path: '/accounting' },
-    { icon: Settings, label: 'Configuración', path: '/settings' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: [] },
+    { icon: FileText, label: 'Gastos & Aprob.', path: '/expenses', roles: [] }, // All can access, internal logic handles permissions
+    { icon: ShoppingBag, label: 'Compras', path: '/procurement', roles: [Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR] },
+    { icon: CreditCard, label: 'Facturación', path: '/billing', roles: [Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR] },
+    { icon: Landmark, label: 'Tesorería', path: '/treasury', roles: [Role.ADMIN, Role.TREASURER, Role.ACCOUNTANT, Role.DIRECTOR] },
+    { icon: PieChart, label: 'Presupuesto', path: '/budget', roles: [Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR, Role.MEMBER] },
+    { icon: Briefcase, label: 'Activos', path: '/assets', roles: [] }, // All view
+    { icon: BookOpen, label: 'Contabilidad', path: '/accounting', roles: [Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR] },
+    { icon: Settings, label: 'Configuración', path: '/settings', roles: [Role.ADMIN] },
 ];
 
 export const Sidebar = () => {
-    const { logout, user } = useAuth();
+    const { logout, user, hasRole } = useAuth(); // Added hasRole
 
     return (
         <div className="h-screen w-64 bg-slate-900 text-white flex flex-col fixed left-0 top-0 overflow-y-auto">
@@ -38,7 +40,7 @@ export const Sidebar = () => {
             </div>
 
             <div className="flex-1 py-6 space-y-1">
-                {menuItems.map((item) => (
+                {menuItems.filter(item => item.roles.length === 0 || hasRole(item.roles)).map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}

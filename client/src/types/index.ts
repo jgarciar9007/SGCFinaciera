@@ -1,8 +1,19 @@
+export const Role = {
+    ADMIN: 'ADMIN',
+    USER: 'USER',
+    MEMBER: 'MEMBER',
+    DIRECTOR: 'DIRECTOR',
+    ACCOUNTANT: 'ACCOUNTANT',
+    TREASURER: 'TREASURER'
+} as const;
+
+export type Role = typeof Role[keyof typeof Role];
+
 export interface User {
     id: number;
     email: string;
     fullName: string;
-    role: string;
+    role: Role;
 }
 
 export interface BudgetAccount {

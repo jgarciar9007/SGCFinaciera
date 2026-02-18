@@ -2,18 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import type { Asset } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { Role } from '../types';
 import { Plus, Search, ArrowRightLeft } from 'lucide-react';
 import { CreateAssetModal } from '../components/assets/CreateAssetModal';
 import { MovementModal } from '../components/assets/MovementModal';
 import { cn } from '../lib/utils';
 
 export const AssetsPage = () => {
+    const { hasRole } = useAuth();
     const [assets, setAssets] = useState<Asset[]>([]);
     const [loading, setLoading] = useState(true);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const canEdit = hasRole([Role.ADMIN, Role.ACCOUNTANT]);
 
     const fetchAssets = async () => {
         setLoading(true);
@@ -50,13 +55,15 @@ export const AssetsPage = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Activos Fijos</h1>
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                    <Plus className="w-4 h-4" />
-                    Nuevo Activo
-                </button>
+                {canEdit && (
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Nuevo Activo
+                    </button>
+                )}
             </div>
 
             <div className="bg-white rounded-lg shadow">
@@ -126,18 +133,20 @@ export const AssetsPage = () => {
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedAsset(asset);
-                                                    setIsMovementModalOpen(true);
-                                                }}
-                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
-                                                title="Registrar Movimiento"
-                                                disabled={asset.quantity === 0}
-                                            >
-                                                <ArrowRightLeft className="w-4 h-4" />
-                                                <span className="hidden sm:inline">Mover</span>
-                                            </button>
+                                            {canEdit && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedAsset(asset);
+                                                        setIsMovementModalOpen(true);
+                                                    }}
+                                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+                                                    title="Registrar Movimiento"
+                                                    disabled={asset.quantity === 0}
+                                                >
+                                                    <ArrowRightLeft className="w-4 h-4" />
+                                                    <span className="hidden sm:inline">Mover</span>
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

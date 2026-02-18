@@ -11,11 +11,15 @@ router.use(authenticateToken); // Protect all expense routes
 router.get('/', getExpenseRequests);
 router.post('/', createExpenseRequest);
 
+import { Role } from '@prisma/client';
+
+// ... imports
+
 // Only ADMIN and DIRECTOR can approve/reject expenses
-router.patch('/:id/status', authorize('ADMIN', 'DIRECTOR', 'ACCOUNTANT'), updateExpenseStatus);
+router.patch('/:id/status', authorize([Role.ADMIN, Role.DIRECTOR, Role.ACCOUNTANT]), updateExpenseStatus);
 
 // Only ADMIN can delete expenses
-router.delete('/:id', authorize('ADMIN'), deleteExpenseRequest);
+router.delete('/:id', authorize([Role.ADMIN]), deleteExpenseRequest);
 
 router.post('/:id/attachments', upload.single('file'), uploadAttachment);
 router.post('/approval-document', upload.single('file'), (req, res, next) => {

@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { clearData, getUsers, deleteUser, createUser, updateUser, resetPassword } from '../controllers/adminController';
-import { authenticateToken, authorizeRole } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
+import { authorize } from '../middleware/authorize';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
 router.use(authenticateToken);
-router.use(authorizeRole(['ADMIN']));
+router.use(authorize([Role.ADMIN]));
 
 router.post('/users', createUser);
 router.put('/users/:id', updateUser);

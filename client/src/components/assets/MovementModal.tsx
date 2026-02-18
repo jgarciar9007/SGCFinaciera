@@ -6,12 +6,13 @@ import type { User, Area } from '../../types';
 import { showToast } from '../../lib/toast';
 
 interface MovementModalProps {
+    isOpen: boolean;
     asset: { id: number; name: string; code?: string; status: string; quantity: number };
     onClose: () => void;
     onSuccess: () => void;
 }
 
-export const MovementModal = ({ asset, onClose, onSuccess }: MovementModalProps) => {
+export const MovementModal = ({ isOpen, asset, onClose, onSuccess }: MovementModalProps) => {
     const [type, setType] = useState('ASSIGNMENT');
     const [quantity, setQuantity] = useState(1);
     const [assignedToUserId, setAssignedToUserId] = useState('');
@@ -75,7 +76,7 @@ export const MovementModal = ({ asset, onClose, onSuccess }: MovementModalProps)
     const labelClasses = "text-sm font-medium text-gray-700";
 
     return (
-        <Modal title={`Registrar Movimiento - ${asset.name}`} isOpen={true} onClose={onClose}>
+        <Modal title={`Registrar Movimiento - ${asset.name}`} isOpen={isOpen} onClose={onClose}>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                     <label className={labelClasses}>Tipo de Movimiento</label>
