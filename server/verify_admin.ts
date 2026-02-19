@@ -21,7 +21,7 @@ async function verify() {
     console.log('✅ User found.');
     console.log(`   ID: ${user.id}`);
     console.log(`   Role: ${user.role}`);
-    console.log(`   Name: ${user.name}`);
+    console.log(`   Name: ${user.fullName}`);
 
     const isValid = await bcrypt.compare(password, user.password);
 

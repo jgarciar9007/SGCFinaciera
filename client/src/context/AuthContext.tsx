@@ -43,9 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const hasRole = (roles: Role[]) => {
         if (!user) return false;
-        if (user.role === Role.ADMIN) return true; // ADMIN matches everything? Or explicit?
-        // Let's stick to explicit unless ADMIN is truly superuser in frontend logic too.
-        // Backend treats ADMIN as explicit usually locally, but let's say ADMIN checks pass.
         if (user.role === Role.ADMIN) return true;
         return roles.includes(user.role);
     };
