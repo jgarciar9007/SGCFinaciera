@@ -1,49 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../api/client';
-import { Trash2, User, Shield, Edit, Key, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trash2, User as UserIcon, Shield, Edit, Key, Plus } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { UserModal } from './UserModal';
 import { ResetPasswordModal } from './ResetPasswordModal';
+import { useUsers, useDeleteUser } from '../../hooks/queries/useUsers';
+import type { User } from '../../types';
 
-interface User {
-    id: number;
-    email: string;
-    fullName: string;
-    role: string;
-    createdAt: string;
-}
+const roleTranslations: Record<string, string> = {
+    ADMIN: 'Administrador',
+    USER: 'Usuario',
+    MEMBER: 'Miembro',
+    DIRECTOR: 'Director',
+    ACCOUNTANT: 'Contador',
+    TREASURER: 'Tesorero'
+};
 
 export const UserList = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
     const { addToast } = useToast();
+    const { data: users = [], isLoading: loading } = useUsers();
+    const deleteUserMutation = useDeleteUser();
 
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isResetModalOpen, setIsResetModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-    const fetchUsers = async () => {
-        setLoading(true);
-        try {
-            const res = await api.get('/admin/users');
-            setUsers(res.data);
-        } catch (error) {
-            addToast('Error al cargar usuarios', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
     const handleDelete = async (id: number) => {
         if (!confirm('¿Está seguro de eliminar este usuario?')) return;
         try {
-            await api.delete(`/admin/users/${id}`);
+            await deleteUserMutation.mutateAsync(id);
             addToast('Usuario eliminado', 'success');
-            fetchUsers();
         } catch (error) {
             addToast('Error al eliminar usuario', 'error');
         }
@@ -94,7 +79,7 @@ export const UserList = () => {
                             <tr key={user.id} className="hover:bg-muted/50">
                                 <td className="p-3 flex items-center gap-2">
                                     <div className="bg-slate-100 p-1 rounded-full">
-                                        <User className="w-4 h-4 text-slate-600" />
+                                        <UserIcon className="w-4 h-4 text-slate-600" />
                                     </div>
                                     {user.fullName}
                                 </td>
@@ -102,7 +87,7 @@ export const UserList = () => {
                                 <td className="p-3">
                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
                                         {user.role === 'ADMIN' && <Shield className="w-3 h-3" />}
-                                        {user.role}
+                                        {roleTranslations[user.role] || user.role}
                                     </span>
                                 </td>
                                 <td className="p-3 text-right">
@@ -139,7 +124,6 @@ export const UserList = () => {
             <UserModal
                 isOpen={isUserModalOpen}
                 onClose={() => setIsUserModalOpen(false)}
-                onSuccess={fetchUsers}
                 userToEdit={selectedUser}
             />
 

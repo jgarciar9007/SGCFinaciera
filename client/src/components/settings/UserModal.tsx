@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import api from '../../api/client';
 import { useToast } from '../../context/ToastContext';
+import { useCreateUser, useUpdateUser } from '../../hooks/queries/useUsers';
+
+import type { User } from '../../types';
 
 interface UserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: () => void;
-    userToEdit?: { id: number; email: string; fullName: string; role: string } | null;
+    userToEdit?: User | null;
 }
 
-export const UserModal = ({ isOpen, onClose, onSuccess, userToEdit }: UserModalProps) => {
+export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -19,6 +20,9 @@ export const UserModal = ({ isOpen, onClose, onSuccess, userToEdit }: UserModalP
         role: 'USER',
         password: '',
     });
+
+    const createUserMutation = useCreateUser();
+    const updateUserMutation = useUpdateUser();
 
     useEffect(() => {
         if (userToEdit) {
@@ -35,27 +39,27 @@ export const UserModal = ({ isOpen, onClose, onSuccess, userToEdit }: UserModalP
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         try {
             if (userToEdit) {
-                await api.put(`/admin/users/${userToEdit.id}`, {
+                await updateUserMutation.mutateAsync({
+                    id: userToEdit.id,
                     email: formData.email,
                     fullName: formData.fullName,
                     role: formData.role,
                 });
                 addToast('Usuario actualizado correctamente', 'success');
             } else {
-                await api.post('/admin/users', formData);
+                await createUserMutation.mutateAsync(formData);
                 addToast('Usuario creado correctamente', 'success');
             }
-            onSuccess();
             onClose();
         } catch (error: any) {
             addToast(error.response?.data?.error || 'Error al guardar usuario', 'error');
-        } finally {
-            setLoading(false);
         }
     };
+
+    // Use the loading state from mutations
+    const isPending = createUserMutation.isPending || updateUserMutation.isPending;
 
     if (!isOpen) return null;
 
@@ -95,6 +99,10 @@ export const UserModal = ({ isOpen, onClose, onSuccess, userToEdit }: UserModalP
                             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                         >
                             <option value="USER">Usuario</option>
+                            <option value="MEMBER">Miembro</option>
+                            <option value="ACCOUNTANT">Contador</option>
+                            <option value="TREASURER">Tesorero</option>
+                            <option value="DIRECTOR">Director</option>
                             <option value="ADMIN">Administrador</option>
                         </select>
                     </div>
@@ -115,8 +123,8 @@ export const UserModal = ({ isOpen, onClose, onSuccess, userToEdit }: UserModalP
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm border rounded hover:bg-gray-50">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
-                            {loading ? 'Guardando...' : 'Guardar'}
+                        <button type="submit" disabled={isPending} className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+                            {isPending ? 'Guardando...' : 'Guardar'}
                         </button>
                     </div>
                 </form>

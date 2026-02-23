@@ -16,6 +16,10 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AssetsPage } from './pages/AssetsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { BudgetPage } from './pages/BudgetPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated } = useAuth();
@@ -27,62 +31,65 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <Router>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <Router>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
 
-              <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="expenses" element={<ExpensesPage />} />
+                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="expenses" element={<ExpensesPage />} />
 
-                <Route path="procurement" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR]}>
-                    <ProcurementPage />
-                  </RoleGuard>
-                } />
+                  <Route path="procurement" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR]}>
+                      <ProcurementPage />
+                    </RoleGuard>
+                  } />
 
-                <Route path="billing" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
-                    <BillingPage />
-                  </RoleGuard>
-                } />
+                  <Route path="billing" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
+                      <BillingPage />
+                    </RoleGuard>
+                  } />
 
-                <Route path="treasury" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN, Role.TREASURER, Role.ACCOUNTANT, Role.DIRECTOR]}>
-                    <TreasuryPage />
-                  </RoleGuard>
-                } />
+                  <Route path="treasury" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN, Role.TREASURER, Role.ACCOUNTANT, Role.DIRECTOR]}>
+                      <TreasuryPage />
+                    </RoleGuard>
+                  } />
 
-                <Route path="budget" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR, Role.MEMBER]}>
-                    <BudgetPage />
-                  </RoleGuard>
-                } />
+                  <Route path="budget" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.DIRECTOR, Role.MEMBER]}>
+                      <BudgetPage />
+                    </RoleGuard>
+                  } />
 
-                <Route path="assets" element={<AssetsPage />} />
+                  <Route path="assets" element={<AssetsPage />} />
 
-                <Route path="accounting" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
-                    <AccountingPage />
-                  </RoleGuard>
-                } />
+                  <Route path="accounting" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN, Role.ACCOUNTANT, Role.TREASURER, Role.DIRECTOR]}>
+                      <AccountingPage />
+                    </RoleGuard>
+                  } />
 
-                <Route path="settings" element={
-                  <RoleGuard allowedRoles={[Role.ADMIN]}>
-                    <SettingsPage />
-                  </RoleGuard>
-                } />
-              </Route>
-            </Routes>
-            <ToastContainer />
-          </Router>
-        </ConfirmProvider>
-      </ToastProvider>
-    </AuthProvider>
+                  <Route path="settings" element={
+                    <RoleGuard allowedRoles={[Role.ADMIN]}>
+                      <SettingsPage />
+                    </RoleGuard>
+                  } />
+                </Route>
+              </Routes>
+              <ToastContainer />
+            </Router>
+          </ConfirmProvider>
+        </ToastProvider>
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

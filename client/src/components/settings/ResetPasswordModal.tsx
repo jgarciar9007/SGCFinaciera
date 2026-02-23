@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import api from '../../api/client';
 import { useToast } from '../../context/ToastContext';
+import { useResetPassword } from '../../hooks/queries/useUsers';
 
 interface ResetPasswordModalProps {
     isOpen: boolean;
@@ -13,23 +13,22 @@ interface ResetPasswordModalProps {
 export const ResetPasswordModal = ({ isOpen, onClose, userId, userName }: ResetPasswordModalProps) => {
     const { addToast } = useToast();
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const resetPasswordMutation = useResetPassword();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userId) return;
-        setLoading(true);
         try {
-            await api.patch(`/admin/users/${userId}/reset-password`, { password });
+            await resetPasswordMutation.mutateAsync({ id: userId, password });
             addToast('Contraseña restablecida correctamente', 'success');
             setPassword('');
             onClose();
         } catch (error: any) {
             addToast(error.response?.data?.error || 'Error al restablecer contraseña', 'error');
-        } finally {
-            setLoading(false);
         }
     };
+
+    const isPending = resetPasswordMutation.isPending;
 
     if (!isOpen) return null;
 
@@ -59,8 +58,8 @@ export const ResetPasswordModal = ({ isOpen, onClose, userId, userName }: ResetP
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm border rounded hover:bg-gray-50">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50">
-                            {loading ? 'Restableciendo...' : 'Restablecer'}
+                        <button type="submit" disabled={isPending} className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50">
+                            {isPending ? 'Restableciendo...' : 'Restablecer'}
                         </button>
                     </div>
                 </form>
